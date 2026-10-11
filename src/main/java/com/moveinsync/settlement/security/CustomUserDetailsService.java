@@ -1,12 +1,19 @@
 package com.moveinsync.settlement.security;
 
-import com.moveinsync.settlement.auth.entity.AppUser;
-import com.moveinsync.settlement.auth.repository.UserRepository;
+import com.moveinsync.settlement.entity.AppUser;
+import com.moveinsync.settlement.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Custom {@link UserDetailsService} bridging Spring Security with MoveInSync's database user store.
+ *
+ * <p>Loads user accounts by username, resolves active status, and wraps them in {@link CustomUserDetails}.
+ *
+ * @author MoveInSync Core Settlement Team
+ */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 

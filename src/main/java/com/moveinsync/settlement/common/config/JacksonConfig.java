@@ -6,6 +6,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Jackson JSON Serialization Configuration.
+ * <p>
+ * Registers {@link JavaTimeModule} to support Java 8+ Date and Time API ({@code Instant}, {@code LocalDate}, etc.)
+ * and disables timestamp epoch serialization so dates format as standard ISO-8601 strings.
+ */
 @Configuration
 public class JacksonConfig {
 

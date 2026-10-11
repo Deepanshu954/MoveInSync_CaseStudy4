@@ -11,7 +11,13 @@ public class ExceptionResponseDto {
 
     public ExceptionResponseDto() {}
 
-    public ExceptionResponseDto(LocalDateTime timestamp, int status, String error, String message, String path) {
+    public ExceptionResponseDto(
+            LocalDateTime timestamp,
+            int status,
+            String error,
+            String message,
+            String path
+    ) {
         this.timestamp = timestamp;
         this.status = status;
         this.error = error;

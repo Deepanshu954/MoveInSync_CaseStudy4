@@ -1,7 +1,7 @@
 package com.moveinsync.settlement.security;
 
-import com.moveinsync.settlement.auth.entity.AppUser;
-import com.moveinsync.settlement.auth.entity.Role;
+import com.moveinsync.settlement.entity.AppUser;
+import com.moveinsync.settlement.entity.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
+/**
+ * UserDetails adapter wrapping AppUser for Spring Security authentication and RBAC.
+ *
+ * @author MoveInSync Core Settlement Team
+ */
 public class CustomUserDetails implements UserDetails {
 
     private final AppUser user;

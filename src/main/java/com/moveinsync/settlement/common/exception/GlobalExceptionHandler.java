@@ -18,74 +18,125 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Centralized REST exception handler providing RFC 7807 compliant Problem Details responses.
+ * Guarantees that client applications receive predictable, structured JSON error payloads
+ * across all validation, domain, security, and runtime error conditions.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ExceptionResponseDto> handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ExceptionResponseDto> handleNotFound(
+            ResourceNotFoundException ex,
+            HttpServletRequest req
+    ) {
         log.warn("Resource not found: {}", ex.getMessage());
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler({DuplicateResourceException.class, IdempotencyConflictException.class})
-    public ResponseEntity<ExceptionResponseDto> handleConflict(RuntimeException ex, HttpServletRequest request) {
-        log.warn("Conflict: {}", ex.getMessage());
-        return buildResponse(HttpStatus.CONFLICT, ex.getMessage(), request.getRequestURI());
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ExceptionResponseDto> handleDuplicate(
+            DuplicateResourceException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Duplicate resource conflict: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler({PolicyViolationException.class, InvalidStateTransitionException.class})
-    public ResponseEntity<ExceptionResponseDto> handleUnprocessable(RuntimeException ex, HttpServletRequest request) {
-        log.warn("Unprocessable entity: {}", ex.getMessage());
-        return buildResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), request.getRequestURI());
+    @ExceptionHandler(IdempotencyConflictException.class)
+    public ResponseEntity<ExceptionResponseDto> handleIdempotencyConflict(
+            IdempotencyConflictException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Idempotency conflict detected: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(InvalidStateTransitionException.class)
+    public ResponseEntity<ExceptionResponseDto> handleInvalidState(
+            InvalidStateTransitionException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Invalid state transition attempted: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(PolicyViolationException.class)
+    public ResponseEntity<ExceptionResponseDto> handlePolicyViolation(
+            PolicyViolationException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Business policy violation: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponseDto> handleBadCredentials(BadCredentialsException ex, HttpServletRequest request) {
+    public ResponseEntity<ExceptionResponseDto> handleBadCredentials(
+            BadCredentialsException ex,
+            HttpServletRequest req
+    ) {
         log.warn("Bad credentials attempt: {}", ex.getMessage());
-        return buildResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password", request.getRequestURI());
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password", req.getRequestURI());
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponseDto> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
-        log.warn("Access denied on {}: {}", request.getRequestURI(), ex.getMessage());
-        return buildResponse(HttpStatus.FORBIDDEN, "Access Denied: Insufficient permissions", request.getRequestURI());
+    public ResponseEntity<ExceptionResponseDto> handleAccessDenied(
+            AccessDeniedException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Access denied on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: You do not possess the required permissions", req.getRequestURI());
     }
 
+    /**
+     * Handles Spring Bean Validation errors ({@code @Valid}), returning field-by-field error mappings.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationExceptionResponseDto> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
-            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+    public ResponseEntity<ValidationExceptionResponseDto> handleValidation(
+            MethodArgumentNotValidException ex,
+            HttpServletRequest req
+    ) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(fe.getField(), fe.getDefaultMessage());
         }
-        log.warn("Validation failure on {}: {}", request.getRequestURI(), errors);
 
-        ValidationExceptionResponseDto response = new ValidationExceptionResponseDto(
+        log.warn("Validation failure on {}: {}", req.getRequestURI(), fieldErrors);
+        ValidationExceptionResponseDto dto = new ValidationExceptionResponseDto(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Bad Request",
                 "Validation failed for one or more fields",
-                request.getRequestURI(),
-                errors
+                req.getRequestURI(),
+                fieldErrors
         );
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponseDto> handleGeneral(Exception ex, HttpServletRequest request) {
-        log.error("Unhandled server exception on {}: ", request.getRequestURI(), ex);
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An internal server error occurred", request.getRequestURI());
+    public ResponseEntity<ExceptionResponseDto> handleGeneric(
+            Exception ex,
+            HttpServletRequest req
+    ) {
+        log.error("Unhandled internal server error on {}: {}", req.getRequestURI(), ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal server error occurred", req.getRequestURI());
     }
 
-    private ResponseEntity<ExceptionResponseDto> buildResponse(HttpStatus status, String message, String path) {
+    private ResponseEntity<ExceptionResponseDto> buildErrorResponse(
+            HttpStatus status,
+            String message,
+            String uri
+    ) {
         ExceptionResponseDto dto = new ExceptionResponseDto(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 message,
-                path
+                uri
         );
-        return new ResponseEntity<>(dto, status);
+        return ResponseEntity.status(status).body(dto);
     }
 }
