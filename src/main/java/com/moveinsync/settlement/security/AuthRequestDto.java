@@ -12,7 +12,11 @@ public class AuthRequestDto {
 
     public AuthRequestDto() {}
 
-    public AuthRequestDto(String username, String password) {
+    public AuthRequestDto(
+            String username,
+            String password
+    ) {
+
         this.username = username;
         this.password = password;
     }

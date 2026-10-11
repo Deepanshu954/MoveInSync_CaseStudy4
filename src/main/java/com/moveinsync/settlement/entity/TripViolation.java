@@ -54,6 +54,16 @@ public class TripViolation {
 
     public TripViolation() {}
 
+        public TripViolation(Long id, Trip trip, PenaltyPolicy.ViolationType violationType, Instant eventAt, String sourceRef, ViolationStatus status, Instant createdAt) {
+        this.id = id;
+        this.trip = trip;
+        this.violationType = violationType;
+        this.eventAt = eventAt;
+        this.sourceRef = sourceRef;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
     public TripViolation(Long id, Trip trip, Instant eventAt, String sourceRef, ViolationStatus status, Instant createdAt) {
         this.id = id;
         this.trip = trip;
@@ -61,6 +71,15 @@ public class TripViolation {
         this.sourceRef = sourceRef;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    
+    public PenaltyPolicy.ViolationType getViolationType() {
+        return violationType;
+    }
+
+    public void setViolationType(PenaltyPolicy.ViolationType violationType) {
+        this.violationType = violationType;
     }
 
     public Long getId() {
