@@ -3,18 +3,12 @@ package com.moveinsync.settlement.settlement.entity;
 import com.moveinsync.settlement.vendor.entity.BusinessUnit;
 import com.moveinsync.settlement.vendor.entity.Vendor;
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "settlement_run")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class SettlementRun {
 
     @Id
@@ -37,43 +31,34 @@ public class SettlementRun {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "run_type", nullable = false, length = 20)
-    @Builder.Default
     private RunType runType = RunType.ORIGINAL;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    @Builder.Default
     private RunStatus status = RunStatus.PENDING;
 
     @Column(name = "idempotency_key", nullable = false, length = 200)
     private String idempotencyKey;
 
     @Column(name = "total_gross", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalGross = BigDecimal.ZERO;
 
     @Column(name = "total_incentives", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalIncentives = BigDecimal.ZERO;
 
     @Column(name = "total_penalties", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalPenalties = BigDecimal.ZERO;
 
     @Column(name = "total_tds", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalTds = BigDecimal.ZERO;
 
     @Column(name = "total_net", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalNet = BigDecimal.ZERO;
 
     @Column(name = "trip_count", nullable = false)
-    @Builder.Default
     private Integer tripCount = 0;
 
     @Column(name = "driver_count", nullable = false)
-    @Builder.Default
     private Integer driverCount = 0;
 
     @Column(name = "calculation_version", length = 50)
@@ -95,11 +80,9 @@ public class SettlementRun {
     private String errorMessage;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
-    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     public enum RunType {
@@ -114,5 +97,217 @@ public class SettlementRun {
         APPROVED,
         FINALIZED,
         FAILED
+    }
+
+    public SettlementRun() {}
+
+    public SettlementRun(Long id, Vendor vendor, BusinessUnit businessUnit, LocalDate periodStart, LocalDate periodEnd, RunType runType, RunStatus status, String idempotencyKey, BigDecimal totalGross, BigDecimal totalIncentives, BigDecimal totalPenalties, BigDecimal totalTds, BigDecimal totalNet, Integer tripCount, Integer driverCount, String calculationVersion, String configHash, String initiatedBy, String approvedBy, String finalizedBy, String errorMessage, Instant createdAt, Instant updatedAt) {
+        this.id = id;
+        this.vendor = vendor;
+        this.businessUnit = businessUnit;
+        this.periodStart = periodStart;
+        this.periodEnd = periodEnd;
+        this.runType = runType;
+        this.status = status;
+        this.idempotencyKey = idempotencyKey;
+        this.totalGross = totalGross;
+        this.totalIncentives = totalIncentives;
+        this.totalPenalties = totalPenalties;
+        this.totalTds = totalTds;
+        this.totalNet = totalNet;
+        this.tripCount = tripCount;
+        this.driverCount = driverCount;
+        this.calculationVersion = calculationVersion;
+        this.configHash = configHash;
+        this.initiatedBy = initiatedBy;
+        this.approvedBy = approvedBy;
+        this.finalizedBy = finalizedBy;
+        this.errorMessage = errorMessage;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public BusinessUnit getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(BusinessUnit businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
+    public LocalDate getPeriodStart() {
+        return periodStart;
+    }
+
+    public void setPeriodStart(LocalDate periodStart) {
+        this.periodStart = periodStart;
+    }
+
+    public LocalDate getPeriodEnd() {
+        return periodEnd;
+    }
+
+    public void setPeriodEnd(LocalDate periodEnd) {
+        this.periodEnd = periodEnd;
+    }
+
+    public RunType getRunType() {
+        return runType;
+    }
+
+    public void setRunType(RunType runType) {
+        this.runType = runType;
+    }
+
+    public RunStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(RunStatus status) {
+        this.status = status;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public BigDecimal getTotalGross() {
+        return totalGross;
+    }
+
+    public void setTotalGross(BigDecimal totalGross) {
+        this.totalGross = totalGross;
+    }
+
+    public BigDecimal getTotalIncentives() {
+        return totalIncentives;
+    }
+
+    public void setTotalIncentives(BigDecimal totalIncentives) {
+        this.totalIncentives = totalIncentives;
+    }
+
+    public BigDecimal getTotalPenalties() {
+        return totalPenalties;
+    }
+
+    public void setTotalPenalties(BigDecimal totalPenalties) {
+        this.totalPenalties = totalPenalties;
+    }
+
+    public BigDecimal getTotalTds() {
+        return totalTds;
+    }
+
+    public void setTotalTds(BigDecimal totalTds) {
+        this.totalTds = totalTds;
+    }
+
+    public BigDecimal getTotalNet() {
+        return totalNet;
+    }
+
+    public void setTotalNet(BigDecimal totalNet) {
+        this.totalNet = totalNet;
+    }
+
+    public Integer getTripCount() {
+        return tripCount;
+    }
+
+    public void setTripCount(Integer tripCount) {
+        this.tripCount = tripCount;
+    }
+
+    public Integer getDriverCount() {
+        return driverCount;
+    }
+
+    public void setDriverCount(Integer driverCount) {
+        this.driverCount = driverCount;
+    }
+
+    public String getCalculationVersion() {
+        return calculationVersion;
+    }
+
+    public void setCalculationVersion(String calculationVersion) {
+        this.calculationVersion = calculationVersion;
+    }
+
+    public String getConfigHash() {
+        return configHash;
+    }
+
+    public void setConfigHash(String configHash) {
+        this.configHash = configHash;
+    }
+
+    public String getInitiatedBy() {
+        return initiatedBy;
+    }
+
+    public void setInitiatedBy(String initiatedBy) {
+        this.initiatedBy = initiatedBy;
+    }
+
+    public String getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(String approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public String getFinalizedBy() {
+        return finalizedBy;
+    }
+
+    public void setFinalizedBy(String finalizedBy) {
+        this.finalizedBy = finalizedBy;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

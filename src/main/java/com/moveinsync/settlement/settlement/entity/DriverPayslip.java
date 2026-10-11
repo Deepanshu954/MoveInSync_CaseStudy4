@@ -2,7 +2,6 @@ package com.moveinsync.settlement.settlement.entity;
 
 import com.moveinsync.settlement.driver.entity.Driver;
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -10,11 +9,6 @@ import java.time.Instant;
 @Table(name = "driver_payslip", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"run_id", "driver_id"})
 })
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DriverPayslip {
 
     @Id
@@ -30,30 +24,118 @@ public class DriverPayslip {
     private Driver driver;
 
     @Column(name = "gross_pay", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal grossPay = BigDecimal.ZERO;
 
     @Column(name = "total_incentives", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalIncentives = BigDecimal.ZERO;
 
     @Column(name = "total_penalties", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalPenalties = BigDecimal.ZERO;
 
     @Column(name = "total_tds", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal totalTds = BigDecimal.ZERO;
 
     @Column(name = "net_pay", nullable = false, precision = 15, scale = 2)
-    @Builder.Default
     private BigDecimal netPay = BigDecimal.ZERO;
 
     @Column(name = "trip_count", nullable = false)
-    @Builder.Default
     private Integer tripCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
+
+    public DriverPayslip() {}
+
+    public DriverPayslip(Long id, SettlementRun run, Driver driver, BigDecimal grossPay, BigDecimal totalIncentives, BigDecimal totalPenalties, BigDecimal totalTds, BigDecimal netPay, Integer tripCount, Instant createdAt) {
+        this.id = id;
+        this.run = run;
+        this.driver = driver;
+        this.grossPay = grossPay;
+        this.totalIncentives = totalIncentives;
+        this.totalPenalties = totalPenalties;
+        this.totalTds = totalTds;
+        this.netPay = netPay;
+        this.tripCount = tripCount;
+        this.createdAt = createdAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public SettlementRun getRun() {
+        return run;
+    }
+
+    public void setRun(SettlementRun run) {
+        this.run = run;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public void setDriver(Driver driver) {
+        this.driver = driver;
+    }
+
+    public BigDecimal getGrossPay() {
+        return grossPay;
+    }
+
+    public void setGrossPay(BigDecimal grossPay) {
+        this.grossPay = grossPay;
+    }
+
+    public BigDecimal getTotalIncentives() {
+        return totalIncentives;
+    }
+
+    public void setTotalIncentives(BigDecimal totalIncentives) {
+        this.totalIncentives = totalIncentives;
+    }
+
+    public BigDecimal getTotalPenalties() {
+        return totalPenalties;
+    }
+
+    public void setTotalPenalties(BigDecimal totalPenalties) {
+        this.totalPenalties = totalPenalties;
+    }
+
+    public BigDecimal getTotalTds() {
+        return totalTds;
+    }
+
+    public void setTotalTds(BigDecimal totalTds) {
+        this.totalTds = totalTds;
+    }
+
+    public BigDecimal getNetPay() {
+        return netPay;
+    }
+
+    public void setNetPay(BigDecimal netPay) {
+        this.netPay = netPay;
+    }
+
+    public Integer getTripCount() {
+        return tripCount;
+    }
+
+    public void setTripCount(Integer tripCount) {
+        this.tripCount = tripCount;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
 }

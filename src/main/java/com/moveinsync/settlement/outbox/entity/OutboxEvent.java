@@ -1,18 +1,12 @@
 package com.moveinsync.settlement.outbox.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 
 @Entity
 @Table(name = "outbox_event")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class OutboxEvent {
 
     @Id
@@ -34,15 +28,12 @@ public class OutboxEvent {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    @Builder.Default
     private OutboxStatus status = OutboxStatus.PENDING;
 
     @Column(name = "retry_count", nullable = false)
-    @Builder.Default
     private Integer retryCount = 0;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "processed_at")
@@ -50,5 +41,91 @@ public class OutboxEvent {
 
     public enum OutboxStatus {
         PENDING, PROCESSED, FAILED
+    }
+
+    public OutboxEvent() {}
+
+    public OutboxEvent(Long id, String aggregateType, Long aggregateId, String eventType, String payload, OutboxStatus status, Integer retryCount, Instant createdAt, Instant processedAt) {
+        this.id = id;
+        this.aggregateType = aggregateType;
+        this.aggregateId = aggregateId;
+        this.eventType = eventType;
+        this.payload = payload;
+        this.status = status;
+        this.retryCount = retryCount;
+        this.createdAt = createdAt;
+        this.processedAt = processedAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getAggregateType() {
+        return aggregateType;
+    }
+
+    public void setAggregateType(String aggregateType) {
+        this.aggregateType = aggregateType;
+    }
+
+    public Long getAggregateId() {
+        return aggregateId;
+    }
+
+    public void setAggregateId(Long aggregateId) {
+        this.aggregateId = aggregateId;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
+
+    public OutboxStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OutboxStatus status) {
+        this.status = status;
+    }
+
+    public Integer getRetryCount() {
+        return retryCount;
+    }
+
+    public void setRetryCount(Integer retryCount) {
+        this.retryCount = retryCount;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getProcessedAt() {
+        return processedAt;
+    }
+
+    public void setProcessedAt(Instant processedAt) {
+        this.processedAt = processedAt;
     }
 }

@@ -3,17 +3,11 @@ package com.moveinsync.settlement.reconciliation.entity;
 import com.moveinsync.settlement.invoice.entity.VendorInvoice;
 import com.moveinsync.settlement.settlement.entity.SettlementRun;
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
 @Table(name = "reconciliation")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReconciliationRecord {
 
     @Id
@@ -45,7 +39,6 @@ public class ReconciliationRecord {
     private ReconciliationStatus status;
 
     @Column(name = "accounting_basis", nullable = false, length = 50)
-    @Builder.Default
     private String accountingBasis = "NET_DRIVER_PAYOUT";
 
     @Column(columnDefinition = "TEXT")
@@ -55,14 +48,134 @@ public class ReconciliationRecord {
     private String resolvedBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
-    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     public enum ReconciliationStatus {
         MATCHED, DISCREPANCY, UNDER_REVIEW, RESOLVED
+    }
+
+    public ReconciliationRecord() {}
+
+    public ReconciliationRecord(Long id, VendorInvoice invoice, SettlementRun settlementRun, BigDecimal calculatedAmount, BigDecimal invoiceAmount, BigDecimal difference, BigDecimal tolerance, ReconciliationStatus status, String accountingBasis, String notes, String resolvedBy, Instant createdAt, Instant updatedAt) {
+        this.id = id;
+        this.invoice = invoice;
+        this.settlementRun = settlementRun;
+        this.calculatedAmount = calculatedAmount;
+        this.invoiceAmount = invoiceAmount;
+        this.difference = difference;
+        this.tolerance = tolerance;
+        this.status = status;
+        this.accountingBasis = accountingBasis;
+        this.notes = notes;
+        this.resolvedBy = resolvedBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public VendorInvoice getInvoice() {
+        return invoice;
+    }
+
+    public void setInvoice(VendorInvoice invoice) {
+        this.invoice = invoice;
+    }
+
+    public SettlementRun getSettlementRun() {
+        return settlementRun;
+    }
+
+    public void setSettlementRun(SettlementRun settlementRun) {
+        this.settlementRun = settlementRun;
+    }
+
+    public BigDecimal getCalculatedAmount() {
+        return calculatedAmount;
+    }
+
+    public void setCalculatedAmount(BigDecimal calculatedAmount) {
+        this.calculatedAmount = calculatedAmount;
+    }
+
+    public BigDecimal getInvoiceAmount() {
+        return invoiceAmount;
+    }
+
+    public void setInvoiceAmount(BigDecimal invoiceAmount) {
+        this.invoiceAmount = invoiceAmount;
+    }
+
+    public BigDecimal getDifference() {
+        return difference;
+    }
+
+    public void setDifference(BigDecimal difference) {
+        this.difference = difference;
+    }
+
+    public BigDecimal getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(BigDecimal tolerance) {
+        this.tolerance = tolerance;
+    }
+
+    public ReconciliationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ReconciliationStatus status) {
+        this.status = status;
+    }
+
+    public String getAccountingBasis() {
+        return accountingBasis;
+    }
+
+    public void setAccountingBasis(String accountingBasis) {
+        this.accountingBasis = accountingBasis;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getResolvedBy() {
+        return resolvedBy;
+    }
+
+    public void setResolvedBy(String resolvedBy) {
+        this.resolvedBy = resolvedBy;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

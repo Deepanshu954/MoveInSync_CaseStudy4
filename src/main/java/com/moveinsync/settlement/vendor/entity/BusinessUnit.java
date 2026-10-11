@@ -1,18 +1,12 @@
 package com.moveinsync.settlement.vendor.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "business_unit", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"vendor_id", "code"})
 })
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class BusinessUnit {
 
     @Id
@@ -30,10 +24,67 @@ public class BusinessUnit {
     private String name;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
-    @Builder.Default
     private Instant updatedAt = Instant.now();
+
+    public BusinessUnit() {}
+
+    public BusinessUnit(Long id, Vendor vendor, String code, String name, Instant createdAt, Instant updatedAt) {
+        this.id = id;
+        this.vendor = vendor;
+        this.code = code;
+        this.name = name;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

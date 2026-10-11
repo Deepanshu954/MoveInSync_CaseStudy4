@@ -3,17 +3,11 @@ package com.moveinsync.settlement.policy.entity;
 import com.moveinsync.settlement.vendor.entity.BusinessUnit;
 import com.moveinsync.settlement.vendor.entity.Vendor;
 import jakarta.persistence.*;
-import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Entity
 @Table(name = "incentive_policy")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class IncentivePolicy {
 
     @Id
@@ -48,16 +42,118 @@ public class IncentivePolicy {
     private Instant effectiveTo;
 
     @Column(nullable = false)
-    @Builder.Default
     private Integer version = 1;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public enum IncentiveType {
         ON_TIME_BONUS,
         ATTENDANCE_BONUS,
         WORKED_DAYS_BONUS
+    }
+
+    public IncentivePolicy() {}
+
+    public IncentivePolicy(Long id, Vendor vendor, BusinessUnit businessUnit, IncentiveType type, BigDecimal amount, Integer thresholdValue, BigDecimal thresholdPercent, Instant effectiveFrom, Instant effectiveTo, Integer version, Instant createdAt) {
+        this.id = id;
+        this.vendor = vendor;
+        this.businessUnit = businessUnit;
+        this.type = type;
+        this.amount = amount;
+        this.thresholdValue = thresholdValue;
+        this.thresholdPercent = thresholdPercent;
+        this.effectiveFrom = effectiveFrom;
+        this.effectiveTo = effectiveTo;
+        this.version = version;
+        this.createdAt = createdAt;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Vendor getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(Vendor vendor) {
+        this.vendor = vendor;
+    }
+
+    public BusinessUnit getBusinessUnit() {
+        return businessUnit;
+    }
+
+    public void setBusinessUnit(BusinessUnit businessUnit) {
+        this.businessUnit = businessUnit;
+    }
+
+    public IncentiveType getType() {
+        return type;
+    }
+
+    public void setType(IncentiveType type) {
+        this.type = type;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public Integer getThresholdValue() {
+        return thresholdValue;
+    }
+
+    public void setThresholdValue(Integer thresholdValue) {
+        this.thresholdValue = thresholdValue;
+    }
+
+    public BigDecimal getThresholdPercent() {
+        return thresholdPercent;
+    }
+
+    public void setThresholdPercent(BigDecimal thresholdPercent) {
+        this.thresholdPercent = thresholdPercent;
+    }
+
+    public Instant getEffectiveFrom() {
+        return effectiveFrom;
+    }
+
+    public void setEffectiveFrom(Instant effectiveFrom) {
+        this.effectiveFrom = effectiveFrom;
+    }
+
+    public Instant getEffectiveTo() {
+        return effectiveTo;
+    }
+
+    public void setEffectiveTo(Instant effectiveTo) {
+        this.effectiveTo = effectiveTo;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
     }
 }
