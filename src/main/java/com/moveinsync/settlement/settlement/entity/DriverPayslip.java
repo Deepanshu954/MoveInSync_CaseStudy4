@@ -1,0 +1,59 @@
+package com.moveinsync.settlement.settlement.entity;
+
+import com.moveinsync.settlement.driver.entity.Driver;
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.Instant;
+
+@Entity
+@Table(name = "driver_payslip", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"run_id", "driver_id"})
+})
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class DriverPayslip {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "run_id", nullable = false)
+    private SettlementRun run;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id", nullable = false)
+    private Driver driver;
+
+    @Column(name = "gross_pay", nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal grossPay = BigDecimal.ZERO;
+
+    @Column(name = "total_incentives", nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal totalIncentives = BigDecimal.ZERO;
+
+    @Column(name = "total_penalties", nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal totalPenalties = BigDecimal.ZERO;
+
+    @Column(name = "total_tds", nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal totalTds = BigDecimal.ZERO;
+
+    @Column(name = "net_pay", nullable = false, precision = 15, scale = 2)
+    @Builder.Default
+    private BigDecimal netPay = BigDecimal.ZERO;
+
+    @Column(name = "trip_count", nullable = false)
+    @Builder.Default
+    private Integer tripCount = 0;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
+    private Instant createdAt = Instant.now();
+}
