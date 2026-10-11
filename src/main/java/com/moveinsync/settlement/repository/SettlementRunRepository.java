@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 /**
  * Repository for orchestrating batch settlement calculation runs and concurrency controls.
  *
@@ -24,6 +23,7 @@ import java.util.Optional;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface SettlementRunRepository extends JpaRepository<SettlementRun, Long> {
 
     @Query("""

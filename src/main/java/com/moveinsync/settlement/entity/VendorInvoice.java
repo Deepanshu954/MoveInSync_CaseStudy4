@@ -6,10 +6,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "vendor_invoice", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"vendor_id", "invoice_ref"})
-})
+
+
 /**
  * Monthly GST tax invoice submitted by a transport vendor for billing settlement.
  *
@@ -18,6 +16,11 @@ import java.time.LocalDate;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "vendor_invoice", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"vendor_id", "invoice_ref"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

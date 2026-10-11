@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 /**
  * Repository for granular accounting line items generated during settlement execution.
  *
@@ -15,6 +14,7 @@ import java.util.Optional;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface SettlementLineRepository extends JpaRepository<SettlementLine, Long> {
     List<SettlementLine> findByRunId(Long runId);
     List<SettlementLine> findByRunIdAndDriverId(Long runId, Long driverId);

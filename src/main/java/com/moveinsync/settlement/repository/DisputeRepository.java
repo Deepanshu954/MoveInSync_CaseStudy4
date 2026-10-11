@@ -5,12 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 /**
  * Repository for managing vendor and driver billing dispute tickets.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
     List<Dispute> findByTripId(Long tripId);
     List<Dispute> findBySettlementRunId(Long settlementRunId);

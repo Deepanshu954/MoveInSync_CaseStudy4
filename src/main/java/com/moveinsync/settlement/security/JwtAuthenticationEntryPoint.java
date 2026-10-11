@@ -3,8 +3,9 @@ package com.moveinsync.settlement.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -25,21 +26,14 @@ import java.util.Map;
  * @author MoveInSync Core Settlement Team
  */
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
     private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationEntryPoint(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
     @Override
-    public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException
-    ) throws IOException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         log.warn("Unauthorized access attempt on URI: {} - Error: {}", request.getRequestURI(), authException.getMessage());
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -51,6 +45,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         body.put("error", HttpStatus.UNAUTHORIZED.getReasonPhrase());
         body.put("message", "Full authentication is required to access this resource");
         body.put("path", request.getRequestURI());
+        body.put("traceId", MDC.get("traceId"));
 
         objectMapper.writeValue(response.getOutputStream(), body);
     }

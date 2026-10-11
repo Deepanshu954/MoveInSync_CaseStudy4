@@ -6,12 +6,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 /**
  * Repository for banking disbursement instructions sent to payment gateways.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface PayoutInstructionRepository extends JpaRepository<PayoutInstruction, Long> {
     Optional<PayoutInstruction> findByIdempotencyKey(String idempotencyKey);
     List<PayoutInstruction> findBySettlementRunId(Long settlementRunId);

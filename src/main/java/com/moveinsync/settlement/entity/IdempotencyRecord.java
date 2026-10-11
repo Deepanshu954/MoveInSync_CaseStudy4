@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "idempotency_record")
 /**
  * Request idempotency cache record preventing duplicate execution of sensitive financial operations.
  *
@@ -13,6 +11,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "idempotency_record")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -39,7 +39,7 @@ import java.util.Optional;
 @Slf4j
 public class TaxCalculator {
 
-        private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     /**
      * Calculates Section 194C TDS withholding line item for a driver's monthly taxable earnings.

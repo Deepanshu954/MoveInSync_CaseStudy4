@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 /**
  * Repository supporting Transactional Outbox pattern for guaranteed messaging.
  *
@@ -17,6 +16,7 @@ import java.util.List;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> {
 
     @Query(value = """

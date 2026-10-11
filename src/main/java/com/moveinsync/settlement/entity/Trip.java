@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "trip", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"vendor_id", "external_ref"})
-})
+
+
 /**
  * Represents an individual employee commute transit trip.
  *
@@ -22,6 +20,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "trip", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"vendor_id", "external_ref"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

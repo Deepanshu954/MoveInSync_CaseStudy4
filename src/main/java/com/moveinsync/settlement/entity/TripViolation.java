@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "trip_violation", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"trip_id", "violation_type", "source_ref"})
-})
+
+
 /**
  * Telematics safety or SLA breach incident recorded against a commute trip.
  *
@@ -22,6 +20,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "trip_violation", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"trip_id", "violation_type", "source_ref"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

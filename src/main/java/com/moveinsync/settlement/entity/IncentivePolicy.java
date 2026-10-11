@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "incentive_policy")
 /**
  * Performance incentive policy rewarding drivers and vendors for operational excellence.
  *
@@ -19,6 +17,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "incentive_policy")
 @Getter
 @Setter
 @NoArgsConstructor

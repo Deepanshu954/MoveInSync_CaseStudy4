@@ -6,12 +6,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 /**
  * Repository for vendor tax invoices submitted for settlement reconciliation.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface VendorInvoiceRepository extends JpaRepository<VendorInvoice, Long> {
     Optional<VendorInvoice> findByVendorIdAndInvoiceRef(Long vendorId, String invoiceRef);
     List<VendorInvoice> findByVendorId(Long vendorId);

@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "dispute")
 /**
  * Contested trip billing or deduction ticket filed by a vendor or driver.
  *
@@ -18,6 +16,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "dispute")
 @Getter
 @Setter
 @NoArgsConstructor

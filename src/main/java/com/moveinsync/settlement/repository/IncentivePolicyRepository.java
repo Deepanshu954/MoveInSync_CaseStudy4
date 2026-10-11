@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 
-@Repository
 /**
  * Repository for driver and vendor performance incentive rules.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface IncentivePolicyRepository extends JpaRepository<IncentivePolicy, Long> {
 
     @Query("""

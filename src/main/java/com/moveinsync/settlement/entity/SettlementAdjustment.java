@@ -5,10 +5,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "settlement_adjustment", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"dispute_id", "version"})
-})
+
+
 /**
  * Retroactive delta adjustment correcting a prior finalized settlement run.
  *
@@ -18,6 +16,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "settlement_adjustment", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"dispute_id", "version"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

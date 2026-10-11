@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "settlement_run")
 /**
  * Batch settlement calculation execution run for a designated billing window.
  *
@@ -29,6 +27,8 @@ import java.time.LocalDate;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "settlement_run")
 @Getter
 @Setter
 @NoArgsConstructor

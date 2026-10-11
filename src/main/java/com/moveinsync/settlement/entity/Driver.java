@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "driver", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"vendor_id", "external_ref"})
-})
+
+
 /**
  * Commercial driver profile registered with a transport vendor.
  *
@@ -15,6 +13,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "driver", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"vendor_id", "external_ref"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

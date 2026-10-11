@@ -5,9 +5,8 @@ import com.moveinsync.settlement.dto.SettlementCalculateRequestDto;
 import com.moveinsync.settlement.dto.SettlementRunResponseDto;
 import com.moveinsync.settlement.dto.PayoutFinalizeResponseDto;
 import com.moveinsync.settlement.dto.PayoutInstructionResponseDto;
-import java.util.List;
-
 import com.moveinsync.settlement.service.SettlementService;
+import java.util.List;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

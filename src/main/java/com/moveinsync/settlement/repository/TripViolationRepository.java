@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 
-@Repository
 /**
  * Repository for telematics safety violations and SLA breach infractions.
  *
@@ -17,6 +16,7 @@ import java.util.List;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface TripViolationRepository extends JpaRepository<TripViolation, Long> {
 
     @Query("""

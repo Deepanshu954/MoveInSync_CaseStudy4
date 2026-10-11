@@ -39,8 +39,7 @@ public class OutboxProcessorTask {
      */
     @ExecutionTime
     public OutboxProcessResultDto processPendingEvents() {
-        List<OutboxEvent> pendingEvents = outboxEventRepository
-                .findPendingEventsForProcessing(50);
+        List<OutboxEvent> pendingEvents = outboxEventRepository.findPendingEventsForProcessing(50);
 
         if (pendingEvents.isEmpty()) {
             return OutboxProcessResultDto.builder()
@@ -56,8 +55,7 @@ public class OutboxProcessorTask {
         int failed = 0;
 
         for (OutboxEvent event : pendingEvents) {
-            boolean success = outboxEventDispatcher
-                    .dispatchSingleEvent(event);
+            boolean success = outboxEventDispatcher.dispatchSingleEvent(event);
             if (success) {
                 processed++;
             } else {

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "contract")
 /**
  * Master commercial contract between MoveInSync / enterprise client and a transport vendor.
  *
@@ -20,6 +18,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "contract")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "business_unit", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"vendor_id", "code"})
-})
+
+
 /**
  * Corporate client operational campus or regional facility zone.
  *
@@ -15,6 +13,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "business_unit", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"vendor_id", "code"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "vendor")
 /**
  * Fleet transporter organization contracted to provide corporate employee commute transport.
  *
@@ -13,6 +11,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "vendor")
 @Getter
 @Setter
 @NoArgsConstructor

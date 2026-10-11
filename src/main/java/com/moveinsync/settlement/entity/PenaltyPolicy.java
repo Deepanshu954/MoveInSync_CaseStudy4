@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "penalty_policy")
 /**
  * Safety violation and SLA breach penalty deduction policy.
  *
@@ -15,6 +13,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "penalty_policy")
 @Getter
 @Setter
 @NoArgsConstructor

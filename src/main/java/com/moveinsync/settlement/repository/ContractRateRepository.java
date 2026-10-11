@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 /**
  * Repository interface for managing time-sliced contract rate schedules.
  *
@@ -15,6 +14,7 @@ import java.util.List;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface ContractRateRepository extends JpaRepository<ContractRate, Long> {
     List<ContractRate> findByContractId(Long contractId);
 

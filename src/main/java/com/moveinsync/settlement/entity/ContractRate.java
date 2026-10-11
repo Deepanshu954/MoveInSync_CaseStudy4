@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "contract_rate")
 /**
  * Time-sliced billing rate defined under a vendor contract.
  *
@@ -24,6 +22,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "contract_rate")
 @Getter
 @Setter
 @NoArgsConstructor

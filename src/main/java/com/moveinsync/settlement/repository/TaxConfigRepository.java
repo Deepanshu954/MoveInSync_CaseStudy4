@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.Optional;
 
-@Repository
 /**
  * Repository for Indian Income Tax Section 194C TDS rate configurations.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface TaxConfigRepository extends JpaRepository<TaxConfig, Long> {
 
     @Query("""

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IncentiveCalculator {
 
-        private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
+    private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
 
     /**
      * Calculates bonus incentive line items for all drivers active in the settlement window.

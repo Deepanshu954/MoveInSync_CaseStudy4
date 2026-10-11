@@ -6,8 +6,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 
-@Entity
-@Table(name = "audit_event")
 /**
  * Immutable regulatory audit journal tracking security and financial state modifications.
  *
@@ -15,6 +13,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "audit_event")
 @Getter
 @Setter
 @NoArgsConstructor

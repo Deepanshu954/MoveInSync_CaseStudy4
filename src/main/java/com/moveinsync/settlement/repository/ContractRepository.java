@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 /**
  * Data access operations for vendor commercial contracts and master SLA agreements.
  *
@@ -14,6 +13,7 @@ import java.util.List;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findByVendorId(Long vendorId);
 }

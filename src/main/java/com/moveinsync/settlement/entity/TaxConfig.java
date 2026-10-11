@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "tax_config")
 /**
  * Statutory Indian Income Tax TDS (Tax Deducted at Source) configuration under Section 194C.
  *
@@ -19,6 +17,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "tax_config")
 @Getter
 @Setter
 @NoArgsConstructor

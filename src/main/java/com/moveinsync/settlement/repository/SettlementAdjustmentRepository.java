@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
-@Repository
 /**
  * Repository for managing retroactive delta adjustments and dispute settlements.
  *
@@ -14,6 +13,7 @@ import java.util.List;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface SettlementAdjustmentRepository extends JpaRepository<SettlementAdjustment, Long> {
     List<SettlementAdjustment> findByDisputeId(Long disputeId);
     List<SettlementAdjustment> findByOriginalRunId(Long originalRunId);

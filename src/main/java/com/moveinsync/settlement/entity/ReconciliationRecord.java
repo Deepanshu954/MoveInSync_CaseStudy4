@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "reconciliation")
 /**
  * Three-way financial reconciliation audit comparing calculated runs, vendor invoices, and payouts.
  *
@@ -15,6 +13,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "reconciliation")
 @Getter
 @Setter
 @NoArgsConstructor

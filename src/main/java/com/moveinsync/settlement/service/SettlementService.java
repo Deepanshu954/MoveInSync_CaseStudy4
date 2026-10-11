@@ -23,8 +23,31 @@ import com.moveinsync.settlement.dto.PayoutFinalizeResponseDto;
 import com.moveinsync.settlement.dto.PayoutInstructionResponseDto;
 import com.moveinsync.settlement.service.PayoutService;
 
-import com.moveinsync.settlement.entity.*;
-import com.moveinsync.settlement.repository.*;
+import com.moveinsync.settlement.entity.BusinessUnit;
+import com.moveinsync.settlement.entity.Contract;
+import com.moveinsync.settlement.entity.ContractRate;
+import com.moveinsync.settlement.entity.Driver;
+import com.moveinsync.settlement.entity.DriverPayslip;
+import com.moveinsync.settlement.entity.IncentivePolicy;
+import com.moveinsync.settlement.entity.OutboxEvent;
+import com.moveinsync.settlement.entity.PayoutInstruction;
+import com.moveinsync.settlement.entity.PenaltyPolicy;
+import com.moveinsync.settlement.entity.SettlementLine;
+import com.moveinsync.settlement.entity.SettlementRun;
+import com.moveinsync.settlement.entity.TaxConfig;
+import com.moveinsync.settlement.entity.Trip;
+import com.moveinsync.settlement.entity.TripViolation;
+import com.moveinsync.settlement.entity.Vendor;
+import com.moveinsync.settlement.repository.BusinessUnitRepository;
+import com.moveinsync.settlement.repository.ContractRepository;
+import com.moveinsync.settlement.repository.DriverPayslipRepository;
+import com.moveinsync.settlement.repository.OutboxEventRepository;
+import com.moveinsync.settlement.repository.PayoutInstructionRepository;
+import com.moveinsync.settlement.repository.SettlementLineRepository;
+import com.moveinsync.settlement.repository.SettlementRunRepository;
+import com.moveinsync.settlement.repository.TripRepository;
+import com.moveinsync.settlement.repository.TripViolationRepository;
+import com.moveinsync.settlement.repository.VendorRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +79,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SettlementService {
 
-        private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
+    private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
 
     private final SettlementRunRepository settlementRunRepository;
     private final DriverPayslipRepository driverPayslipRepository;

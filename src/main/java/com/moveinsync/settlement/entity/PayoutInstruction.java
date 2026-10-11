@@ -5,8 +5,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-@Entity
-@Table(name = "payout_instruction")
 /**
  * Banking payout instruction generated upon settlement run approval.
  *
@@ -15,6 +13,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "payout_instruction")
 @Getter
 @Setter
 @NoArgsConstructor

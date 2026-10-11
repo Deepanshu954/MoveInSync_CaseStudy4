@@ -8,10 +8,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 
-@Entity
-@Table(name = "settlement_line", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"run_id", "driver_id", "line_type", "source_type", "source_id"})
-})
+
+
 /**
  * Atomic financial ledger entry produced during a settlement calculation run.
  *
@@ -26,6 +24,11 @@ import java.util.Map;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "settlement_line", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"run_id", "driver_id", "line_type", "source_type", "source_id"})
+})
+
 @Getter
 @Setter
 @NoArgsConstructor

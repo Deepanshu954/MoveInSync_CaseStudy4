@@ -9,12 +9,12 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.util.List;
 
-@Repository
 /**
  * Repository for SLA breach and safety penalty deduction rules.
  *
  * @author MoveInSync Core Settlement Team
  */
+@Repository
 public interface PenaltyPolicyRepository extends JpaRepository<PenaltyPolicy, Long> {
 
     @Query("""

@@ -35,145 +35,137 @@ import java.util.Map;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    // =========================================================================
+    // 1. Client Errors & Resource Not Found (404, 400, 405)
+    // =========================================================================
+
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ExceptionResponseDto> handleNotFound(
-            ResourceNotFoundException ex,
-            HttpServletRequest req) {
-        log.warn("Resource not found: {}", ex.getMessage());
+    public ResponseEntity<ExceptionResponseDto> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
+        log.warn("Resource not found on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(DuplicateResourceException.class)
-    public ResponseEntity<ExceptionResponseDto> handleDuplicate(
-            DuplicateResourceException ex,
-            HttpServletRequest req) {
-        log.warn("Duplicate resource conflict: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
-    }
-
-    @ExceptionHandler(IdempotencyConflictException.class)
-    public ResponseEntity<ExceptionResponseDto> handleIdempotencyConflict(
-            IdempotencyConflictException ex,
-            HttpServletRequest req) {
-        log.warn("Idempotency conflict detected: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ExceptionResponseDto> handleDataIntegrityViolation(
-            DataIntegrityViolationException ex,
-            HttpServletRequest req) {
-        log.warn("Database unique constraint collision: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.CONFLICT, "Database constraint violation or concurrent duplicate request", req.getRequestURI());
-    }
-
-    @ExceptionHandler(InvalidStateTransitionException.class)
-    public ResponseEntity<ExceptionResponseDto> handleInvalidState(
-            InvalidStateTransitionException ex,
-            HttpServletRequest req) {
-        log.warn("Invalid state transition attempted: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
-    }
-
-    @ExceptionHandler(PolicyViolationException.class)
-    public ResponseEntity<ExceptionResponseDto> handlePolicyViolation(
-            PolicyViolationException ex,
-            HttpServletRequest req) {
-        log.warn("Business policy violation: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ExceptionResponseDto> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest req) {
+        log.warn("Endpoint not found on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "Endpoint not found: " + req.getRequestURI(), req.getRequestURI());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionResponseDto> handleIllegalArgument(
-            IllegalArgumentException ex,
-            HttpServletRequest req) {
+    public ResponseEntity<ExceptionResponseDto> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
         log.warn("Illegal argument on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ExceptionResponseDto> handleBadCredentials(
-            BadCredentialsException ex,
-            HttpServletRequest req) {
-        log.warn("Bad credentials attempt: {}", ex.getMessage());
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password", req.getRequestURI());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ExceptionResponseDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
+        log.warn("Method argument type mismatch on {}: parameter '{}'", req.getRequestURI(), ex.getName());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid parameter type for: " + ex.getName(), req.getRequestURI());
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponseDto> handleAccessDenied(
-            AccessDeniedException ex,
-            HttpServletRequest req) {
-        log.warn("Access denied on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: You do not possess the required permissions",
-                req.getRequestURI());
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponseDto> handleNotReadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
+        log.warn("Malformed JSON payload on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Malformed JSON request payload", req.getRequestURI());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponseDto> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, HttpServletRequest req) {
+        log.warn("HTTP method not supported on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), req.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationExceptionResponseDto> handleValidation(
-            MethodArgumentNotValidException ex,
-            HttpServletRequest req) {
+    public ResponseEntity<ValidationExceptionResponseDto> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         Map<String, String> fieldErrors = new HashMap<>();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
             fieldErrors.put(fe.getField(), fe.getDefaultMessage());
         }
 
         log.warn("Validation failure on {}: {}", req.getRequestURI(), fieldErrors);
+
         ValidationExceptionResponseDto dto = new ValidationExceptionResponseDto(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 "Validation failed for one or more fields",
                 req.getRequestURI(),
-                fieldErrors);
+                fieldErrors
+        );
         dto.setTraceId(MDC.get("traceId"));
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ExceptionResponseDto> handleTypeMismatch(
-            MethodArgumentTypeMismatchException ex,
-            HttpServletRequest req) {
-        log.warn("Method argument type mismatch on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid parameter type: " + ex.getName(), req.getRequestURI());
+    // =========================================================================
+    // 2. Conflict & Idempotency Errors (409)
+    // =========================================================================
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ExceptionResponseDto> handleDuplicate(DuplicateResourceException ex, HttpServletRequest req) {
+        log.warn("Duplicate resource conflict on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ExceptionResponseDto> handleNotReadable(
-            HttpMessageNotReadableException ex,
-            HttpServletRequest req) {
-        log.warn("Malformed JSON payload on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Malformed JSON request payload", req.getRequestURI());
+    @ExceptionHandler(IdempotencyConflictException.class)
+    public ResponseEntity<ExceptionResponseDto> handleIdempotencyConflict(IdempotencyConflictException ex, HttpServletRequest req) {
+        log.warn("Idempotency conflict detected on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ExceptionResponseDto> handleMethodNotSupported(
-            HttpRequestMethodNotSupportedException ex,
-            HttpServletRequest req) {
-        log.warn("Method not supported on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), req.getRequestURI());
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionResponseDto> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest req) {
+        log.warn("Database unique constraint collision on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, "Database constraint violation or concurrent duplicate request", req.getRequestURI());
     }
 
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ExceptionResponseDto> handleNoResourceFound(
-            NoResourceFoundException ex,
-            HttpServletRequest req) {
-        log.warn("Resource/endpoint not found on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.NOT_FOUND, "Endpoint not found: " + req.getRequestURI(), req.getRequestURI());
+    // =========================================================================
+    // 3. Domain Policy & State Transition Errors (422)
+    // =========================================================================
+
+    @ExceptionHandler(InvalidStateTransitionException.class)
+    public ResponseEntity<ExceptionResponseDto> handleInvalidState(InvalidStateTransitionException ex, HttpServletRequest req) {
+        log.warn("Invalid state transition on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
     }
+
+    @ExceptionHandler(PolicyViolationException.class)
+    public ResponseEntity<ExceptionResponseDto> handlePolicyViolation(PolicyViolationException ex, HttpServletRequest req) {
+        log.warn("Business policy violation on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+    }
+
+    // =========================================================================
+    // 4. Security & Access Control Errors (401, 403)
+    // =========================================================================
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionResponseDto> handleBadCredentials(BadCredentialsException ex, HttpServletRequest req) {
+        log.warn("Bad credentials attempt on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password", req.getRequestURI());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponseDto> handleAccessDenied(AccessDeniedException ex, HttpServletRequest req) {
+        log.warn("Access denied on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: You do not possess the required permissions", req.getRequestURI());
+    }
+
+    // =========================================================================
+    // 5. Fallback Internal Server Errors (500)
+    // =========================================================================
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponseDto> handleGeneric(
-            Exception ex,
-            HttpServletRequest req) {
+    public ResponseEntity<ExceptionResponseDto> handleGeneric(Exception ex, HttpServletRequest req) {
         log.error("Unhandled internal server error on {}: {}", req.getRequestURI(), ex.getMessage(), ex);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal server error occurred",
-                req.getRequestURI());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal server error occurred", req.getRequestURI());
     }
 
-    private ResponseEntity<ExceptionResponseDto> buildErrorResponse(
-            HttpStatus status,
-            String message,
-            String uri) {
+    // =========================================================================
+    // Helper Methods
+    // =========================================================================
+
+    private ResponseEntity<ExceptionResponseDto> buildErrorResponse(HttpStatus status, String message, String uri) {
         ExceptionResponseDto dto = ExceptionResponseDto.builder()
                 .timestamp(LocalDateTime.now())
                 .status(status.value())
@@ -182,6 +174,7 @@ public class GlobalExceptionHandler {
                 .path(uri)
                 .traceId(MDC.get("traceId"))
                 .build();
+
         return ResponseEntity.status(status).body(dto);
     }
 }

@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
 
-@Entity
-@Table(name = "app_user")
 /**
  * Platform user account with credentials and assigned RBAC privileges.
  *
@@ -14,6 +12,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "app_user")
 @Getter
 @Setter
 @NoArgsConstructor

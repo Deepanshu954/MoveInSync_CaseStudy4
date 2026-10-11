@@ -6,8 +6,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 
-@Entity
-@Table(name = "outbox_event")
 /**
  * Transactional Outbox pattern event record ensuring reliable at-least-once asynchronous messaging.
  *
@@ -16,6 +14,8 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Entity
+@Table(name = "outbox_event")
 @Getter
 @Setter
 @NoArgsConstructor

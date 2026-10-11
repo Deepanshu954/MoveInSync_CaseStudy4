@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PenaltyCalculator {
 
-        private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
+    private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
 
     /**
      * Calculates deduction line items for safety violations subject to policy capping.
