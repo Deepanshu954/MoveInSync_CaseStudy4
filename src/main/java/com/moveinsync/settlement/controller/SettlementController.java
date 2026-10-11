@@ -3,6 +3,10 @@ package com.moveinsync.settlement.controller;
 import com.moveinsync.settlement.common.annotation.Idempotent;
 import com.moveinsync.settlement.dto.SettlementCalculateRequestDto;
 import com.moveinsync.settlement.dto.SettlementRunResponseDto;
+import com.moveinsync.settlement.dto.PayoutFinalizeResponseDto;
+import com.moveinsync.settlement.dto.PayoutInstructionResponseDto;
+import java.util.List;
+
 import com.moveinsync.settlement.service.SettlementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -67,5 +71,33 @@ public class SettlementController {
     ) {
         String username = authentication != null ? authentication.getName() : "APPROVER";
         return ResponseEntity.ok(settlementService.approveSettlementRun(id, username));
+    }
+    @PostMapping("/{id}/review")
+    @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
+    @Operation(summary = "Move a calculated settlement run to finance review")
+    public ResponseEntity<SettlementRunResponseDto> moveToReview(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        String username = authentication != null ? authentication.getName() : "APPROVER";
+        return ResponseEntity.ok(settlementService.moveToReview(id, username));
+    }
+
+    @PostMapping("/{id}/finalize")
+    @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
+    @Operation(summary = "Finalize an approved settlement run, generate payout instructions and queue outbox events")
+    public ResponseEntity<PayoutFinalizeResponseDto> finalizeSettlementRun(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        String username = authentication != null ? authentication.getName() : "APPROVER";
+        return ResponseEntity.ok(settlementService.finalizeSettlementRun(id, username));
+    }
+
+    @GetMapping("/{id}/payouts")
+    @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'VENDOR_ADMIN', 'SYSTEM_ADMIN')")
+    @Operation(summary = "List all banking payout instructions generated for a settlement run")
+    public ResponseEntity<List<PayoutInstructionResponseDto>> getRunPayouts(@PathVariable Long id) {
+        return ResponseEntity.ok(settlementService.getRunPayouts(id));
     }
 }

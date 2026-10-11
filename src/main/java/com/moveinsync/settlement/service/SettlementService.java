@@ -16,6 +16,11 @@ import com.moveinsync.settlement.dto.DriverPayslipResponseDto;
 import com.moveinsync.settlement.dto.SettlementCalculateRequestDto;
 import com.moveinsync.settlement.dto.SettlementLineResponseDto;
 import com.moveinsync.settlement.dto.SettlementRunResponseDto;
+import com.moveinsync.settlement.common.exception.PolicyViolationException;
+import com.moveinsync.settlement.dto.PayoutFinalizeResponseDto;
+import com.moveinsync.settlement.dto.PayoutInstructionResponseDto;
+import com.moveinsync.settlement.service.PayoutService;
+
 import com.moveinsync.settlement.entity.*;
 import com.moveinsync.settlement.repository.*;
 import org.springframework.stereotype.Service;
@@ -66,6 +71,10 @@ public class SettlementService {
     private final PenaltyCalculator penaltyCalculator;
     private final TaxCalculator taxCalculator;
     private final ObjectMapper objectMapper;
+    private final PayoutInstructionRepository payoutInstructionRepository;
+    private final OutboxEventRepository outboxEventRepository;
+    private final PayoutService payoutService;
+
 
 
     /**
@@ -411,6 +420,168 @@ public class SettlementService {
 
         log.info("Approved SettlementRun {} by {}", runId, approvedBy);
         return getSettlementRun(runId);
+    }
+
+    
+    /**
+     * Transitions a CALCULATED settlement run to UNDER_REVIEW with pessimistic locking.
+     */
+    @Transactional
+    @Audited(entityType = "SETTLEMENT_RUN", action = "MOVE_TO_REVIEW")
+    @ExecutionTime
+    public SettlementRunResponseDto moveToReview(Long runId, String reviewedBy) {
+        SettlementRun run = settlementRunRepository.findByIdForUpdate(runId)
+                .orElseThrow(() -> new ResourceNotFoundException("SettlementRun not found with id: " + runId));
+
+        if (run.getStatus() != SettlementRun.RunStatus.CALCULATED) {
+            throw new InvalidStateTransitionException(
+                    "Cannot move SettlementRun to UNDER_REVIEW from status: " + run.getStatus() + ". Expected CALCULATED."
+            );
+        }
+
+        run.setStatus(SettlementRun.RunStatus.UNDER_REVIEW);
+        run.setUpdatedAt(Instant.now());
+        settlementRunRepository.save(run);
+
+        log.info("SettlementRun {} transitioned to UNDER_REVIEW by {}", runId, reviewedBy);
+        return getSettlementRun(runId);
+    }
+
+    /**
+     * Finalizes an APPROVED settlement run with pessimistic locking, strict invariant verification,
+     * generation of banking payout instructions, and queuing of Transactional Outbox events.
+     */
+    @Transactional
+    @Audited(entityType = "SETTLEMENT_RUN", action = "FINALIZE")
+    @ExecutionTime
+    public PayoutFinalizeResponseDto finalizeSettlementRun(Long runId, String finalizedBy) {
+        SettlementRun run = settlementRunRepository.findByIdForUpdate(runId)
+                .orElseThrow(() -> new ResourceNotFoundException("SettlementRun not found with id: " + runId));
+
+        if (run.getStatus() != SettlementRun.RunStatus.APPROVED) {
+            throw new InvalidStateTransitionException(
+                    "Cannot finalize SettlementRun in status: " + run.getStatus() + ". Must be APPROVED first."
+            );
+        }
+
+        // 1. Strict Financial Invariant Verification (Zero-drift validation)
+        List<DriverPayslip> payslips = driverPayslipRepository.findByRunId(runId);
+        BigDecimal sumOfPayslips = payslips.stream()
+                .map(DriverPayslip::getNetPay)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
+
+        if (run.getTotalNet().compareTo(sumOfPayslips) != 0) {
+            throw new PolicyViolationException(String.format(
+                    "Financial integrity check failed: Run total net (%s) does not match sum of payslips (%s)",
+                    run.getTotalNet().toPlainString(), sumOfPayslips.toPlainString()
+            ));
+        }
+
+        // 2. Transition Run State
+        run.setStatus(SettlementRun.RunStatus.FINALIZED);
+        run.setFinalizedBy(finalizedBy != null ? finalizedBy : "FINANCE_ADMIN");
+        run.setUpdatedAt(Instant.now());
+        SettlementRun savedRun = settlementRunRepository.save(run);
+
+        // 3. Generate Payout Instructions for eligible drivers (Net Pay > 0)
+        List<PayoutInstruction> payoutInstructions = new ArrayList<>();
+        for (DriverPayslip payslip : payslips) {
+            if (payslip.getNetPay().compareTo(BigDecimal.ZERO) > 0) {
+                String payoutKey = String.format("PAYOUT-RUN-%d-DRIVER-%d", runId, payslip.getDriver().getId());
+                PayoutInstruction instruction = PayoutInstruction.builder()
+                        .settlementRun(savedRun)
+                        .vendor(savedRun.getVendor())
+                        .driver(payslip.getDriver())
+                        .amount(payslip.getNetPay())
+                        .currency("INR")
+                        .idempotencyKey(payoutKey)
+                        .status(PayoutInstruction.PayoutStatus.PENDING)
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
+                        .build();
+                payoutInstructions.add(instruction);
+            }
+        }
+        List<PayoutInstruction> savedPayouts = payoutInstructionRepository.saveAll(payoutInstructions);
+
+        // 4. Generate Outbox Events (Atomic with Finalization)
+        List<OutboxEvent> outboxEvents = new ArrayList<>();
+
+        // Event A: SETTLEMENT_FINALIZED aggregate event
+        Map<String, Object> runEventPayload = new HashMap<>();
+        runEventPayload.put("runId", savedRun.getId());
+        runEventPayload.put("vendorId", savedRun.getVendor().getId());
+        runEventPayload.put("totalNet", savedRun.getTotalNet());
+        runEventPayload.put("driverCount", savedRun.getDriverCount());
+        runEventPayload.put("finalizedBy", savedRun.getFinalizedBy());
+        runEventPayload.put("finalizedAt", Instant.now().toString());
+
+        try {
+            outboxEvents.add(OutboxEvent.builder()
+                    .aggregateType("SETTLEMENT_RUN")
+                    .aggregateId(savedRun.getId())
+                    .eventType("SETTLEMENT_FINALIZED")
+                    .payload(objectMapper.writeValueAsString(runEventPayload))
+                    .status(OutboxEvent.OutboxStatus.PENDING)
+                    .retryCount(0)
+                    .createdAt(Instant.now())
+                    .build());
+        } catch (Exception e) {
+            log.error("Failed to serialize outbox event payload for run {}", runId, e);
+        }
+
+        // Event B: PAYOUT_INITIATED for each payout instruction
+        for (PayoutInstruction p : savedPayouts) {
+            Map<String, Object> payoutEventPayload = new HashMap<>();
+            payoutEventPayload.put("payoutId", p.getId());
+            payoutEventPayload.put("runId", savedRun.getId());
+            payoutEventPayload.put("driverId", p.getDriver() != null ? p.getDriver().getId() : null);
+            payoutEventPayload.put("beneficiaryRef", p.getDriver() != null ? p.getDriver().getExternalRef() : null);
+            payoutEventPayload.put("amount", p.getAmount());
+            payoutEventPayload.put("currency", p.getCurrency());
+            payoutEventPayload.put("idempotencyKey", p.getIdempotencyKey());
+
+            try {
+                outboxEvents.add(OutboxEvent.builder()
+                        .aggregateType("PAYOUT_INSTRUCTION")
+                        .aggregateId(p.getId())
+                        .eventType("PAYOUT_INITIATED")
+                        .payload(objectMapper.writeValueAsString(payoutEventPayload))
+                        .status(OutboxEvent.OutboxStatus.PENDING)
+                        .retryCount(0)
+                        .createdAt(Instant.now())
+                        .build());
+            } catch (Exception e) {
+                log.error("Failed to serialize outbox payload for payout {}", p.getId(), e);
+            }
+        }
+
+        outboxEventRepository.saveAll(outboxEvents);
+
+        log.info("Finalized SettlementRun {}: generated {} payout instructions and {} outbox events",
+                runId, savedPayouts.size(), outboxEvents.size());
+
+        List<PayoutInstructionResponseDto> instructionDtos = savedPayouts.stream()
+                .map(payoutService::toDto)
+                .toList();
+
+        return PayoutFinalizeResponseDto.builder()
+                .settlementRunId(savedRun.getId())
+                .status(savedRun.getStatus())
+                .totalDisbursed(savedRun.getTotalNet())
+                .instructionsGenerated(savedPayouts.size())
+                .outboxEventsQueued(outboxEvents.size())
+                .finalizedBy(savedRun.getFinalizedBy())
+                .finalizedAt(savedRun.getUpdatedAt())
+                .instructions(instructionDtos)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @ExecutionTime
+    public List<PayoutInstructionResponseDto> getRunPayouts(Long runId) {
+        return payoutService.getPayoutsByRunId(runId);
     }
 
     private static class DriverCalculationHolder {
