@@ -71,6 +71,7 @@ public class DisputeController {
         String username = authentication != null ? authentication.getName() : "APPROVER";
         return ResponseEntity.ok(disputeService.resolveDispute(id, request, username));
     }
+
     @PostMapping("/resolve")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Approve or reject a dispute by body disputeId, calculating only the delta and emitting an immediate payout")
