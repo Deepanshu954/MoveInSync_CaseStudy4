@@ -10,6 +10,7 @@ import com.moveinsync.settlement.calculation.CalculatedLineItem;
 import com.moveinsync.settlement.calculation.IncentiveCalculator;
 import com.moveinsync.settlement.calculation.PenaltyCalculator;
 import com.moveinsync.settlement.calculation.TaxCalculator;
+import com.moveinsync.settlement.payout.validator.FinancialInvariantValidator;
 import com.moveinsync.settlement.common.exception.InvalidStateTransitionException;
 import com.moveinsync.settlement.common.exception.ResourceNotFoundException;
 import com.moveinsync.settlement.dto.DriverPayslipResponseDto;
@@ -74,6 +75,7 @@ public class SettlementService {
     private final PayoutInstructionRepository payoutInstructionRepository;
     private final OutboxEventRepository outboxEventRepository;
     private final PayoutService payoutService;
+    private final FinancialInvariantValidator financialInvariantValidator;
 
 
 
@@ -407,15 +409,7 @@ public class SettlementService {
         SettlementRun run = settlementRunRepository.findByIdForUpdate(runId)
                 .orElseThrow(() -> new ResourceNotFoundException("SettlementRun not found with id: " + runId));
 
-        if (run.getStatus() != SettlementRun.RunStatus.CALCULATED && run.getStatus() != SettlementRun.RunStatus.UNDER_REVIEW) {
-            throw new InvalidStateTransitionException(
-                    "Cannot approve SettlementRun in status: " + run.getStatus() + ". Expected CALCULATED or UNDER_REVIEW."
-            );
-        }
-
-        run.setStatus(SettlementRun.RunStatus.APPROVED);
-        run.setApprovedBy(approvedBy != null ? approvedBy : "FINANCE_ADMIN");
-        run.setUpdatedAt(Instant.now());
+        run.approve(approvedBy);
         settlementRunRepository.save(run);
 
         log.info("Approved SettlementRun {} by {}", runId, approvedBy);
@@ -433,14 +427,7 @@ public class SettlementService {
         SettlementRun run = settlementRunRepository.findByIdForUpdate(runId)
                 .orElseThrow(() -> new ResourceNotFoundException("SettlementRun not found with id: " + runId));
 
-        if (run.getStatus() != SettlementRun.RunStatus.CALCULATED) {
-            throw new InvalidStateTransitionException(
-                    "Cannot move SettlementRun to UNDER_REVIEW from status: " + run.getStatus() + ". Expected CALCULATED."
-            );
-        }
-
-        run.setStatus(SettlementRun.RunStatus.UNDER_REVIEW);
-        run.setUpdatedAt(Instant.now());
+        run.moveToReview(reviewedBy);
         settlementRunRepository.save(run);
 
         log.info("SettlementRun {} transitioned to UNDER_REVIEW by {}", runId, reviewedBy);
@@ -464,24 +451,12 @@ public class SettlementService {
             );
         }
 
-        // 1. Strict Financial Invariant Verification (Zero-drift validation)
+        // 1. Strict Financial Invariant Verification via SRP Component
         List<DriverPayslip> payslips = driverPayslipRepository.findByRunId(runId);
-        BigDecimal sumOfPayslips = payslips.stream()
-                .map(DriverPayslip::getNetPay)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+        financialInvariantValidator.validateZeroDrift(run, payslips);
 
-        if (run.getTotalNet().compareTo(sumOfPayslips) != 0) {
-            throw new PolicyViolationException(String.format(
-                    "Financial integrity check failed: Run total net (%s) does not match sum of payslips (%s)",
-                    run.getTotalNet().toPlainString(), sumOfPayslips.toPlainString()
-            ));
-        }
-
-        // 2. Transition Run State
-        run.setStatus(SettlementRun.RunStatus.FINALIZED);
-        run.setFinalizedBy(finalizedBy != null ? finalizedBy : "FINANCE_ADMIN");
-        run.setUpdatedAt(Instant.now());
+        // 2. Transition Run State via Domain Encapsulation
+        run.finalizeRun(finalizedBy);
         SettlementRun savedRun = settlementRunRepository.save(run);
 
         // 3. Generate Payout Instructions for eligible drivers (Net Pay > 0)
@@ -563,7 +538,7 @@ public class SettlementService {
                 runId, savedPayouts.size(), outboxEvents.size());
 
         List<PayoutInstructionResponseDto> instructionDtos = savedPayouts.stream()
-                .map(payoutService::toDto)
+                .map(PayoutInstructionResponseDto::fromEntity)
                 .toList();
 
         return PayoutFinalizeResponseDto.builder()

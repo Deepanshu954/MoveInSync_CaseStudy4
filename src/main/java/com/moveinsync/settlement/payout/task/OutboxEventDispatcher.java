@@ -1,12 +1,9 @@
 package com.moveinsync.settlement.payout.task;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moveinsync.settlement.entity.OutboxEvent;
 import com.moveinsync.settlement.entity.PayoutInstruction;
-import com.moveinsync.settlement.payout.gateway.PaymentGatewayClient;
-import com.moveinsync.settlement.payout.gateway.PaymentTransferRequest;
-import com.moveinsync.settlement.payout.gateway.PaymentTransferResponse;
+import com.moveinsync.settlement.payout.handler.OutboxEventHandler;
+import com.moveinsync.settlement.payout.handler.PaymentDispatchException;
 import com.moveinsync.settlement.repository.OutboxEventRepository;
 import com.moveinsync.settlement.repository.PayoutInstructionRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 
 /**
  * Isolated dispatcher executing single outbox event deliveries within independent transactions.
@@ -25,6 +23,7 @@ import java.time.Instant;
  *   <li><b>Fault Isolation:</b> A failure or timeout in one payment does not roll back sibling events.</li>
  *   <li><b>Short-Lived DB Locks:</b> Network I/O is bounded and database locks are quickly released.</li>
  *   <li><b>Automatic Dead-Lettering:</b> Permanently failed events transition to FAILED after 3 retries.</li>
+ *   <li><b>Open/Closed Extensibility:</b> Delegates to {@link OutboxEventHandler} strategies.</li>
  * </ul>
  *
  * @author MoveInSync Core Settlement Team
@@ -36,85 +35,42 @@ public class OutboxEventDispatcher {
 
     private final OutboxEventRepository outboxEventRepository;
     private final PayoutInstructionRepository payoutInstructionRepository;
-    private final PaymentGatewayClient paymentGatewayClient;
-    private final ObjectMapper objectMapper;
+    private final List<OutboxEventHandler> eventHandlers;
 
     public static final int MAX_RETRIES = 3;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public boolean dispatchSingleEvent(OutboxEvent event) {
         try {
-            if ("PAYOUT_INITIATED".equals(event.getEventType())) {
-                return processPayoutInitiated(event);
-            } else if ("SETTLEMENT_FINALIZED".equals(event.getEventType())) {
-                return processSettlementFinalized(event);
-            } else {
+            OutboxEventHandler handler = eventHandlers.stream()
+                    .filter(h -> h.supports(event.getEventType()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (handler == null) {
                 log.warn("Unrecognized outbox event type: {}, marking processed", event.getEventType());
-                event.setStatus(OutboxEvent.OutboxStatus.PROCESSED);
-                event.setProcessedAt(Instant.now());
+                event.markProcessed();
                 outboxEventRepository.save(event);
                 return true;
             }
+
+            boolean success = handler.handle(event);
+            if (success) {
+                outboxEventRepository.save(event);
+                return true;
+            } else {
+                handleFailure(event, null, "Handler returned false without exception");
+                return false;
+            }
+        } catch (PaymentDispatchException pde) {
+            log.warn("Payment dispatch failure for outbox event {}: {}", event.getId(), pde.getMessage());
+            handleFailure(event, pde.getPayout(), pde.getMessage());
+            return false;
         } catch (Exception ex) {
             log.error("Error dispatching outbox event {}: {}", event.getId(), ex.getMessage(), ex);
             handleFailure(event, null, "DISPATCH_ERROR: " + ex.getMessage());
             return false;
         }
-    }
-
-    private boolean processPayoutInitiated(OutboxEvent event) throws Exception {
-        Long payoutId = event.getAggregateId();
-        PayoutInstruction payout = payoutInstructionRepository.findById(payoutId).orElse(null);
-
-        if (payout == null) {
-            log.error("PayoutInstruction not found for aggregateId: {}", payoutId);
-            event.setStatus(OutboxEvent.OutboxStatus.FAILED);
-            event.setProcessedAt(Instant.now());
-            outboxEventRepository.save(event);
-            return false;
-        }
-
-        JsonNode rootNode = objectMapper.readTree(event.getPayload());
-        String beneficiaryRef = rootNode.has("beneficiaryRef") ? rootNode.get("beneficiaryRef").asText() : "";
-        if (beneficiaryRef.isEmpty() && payout.getDriver() != null) {
-            beneficiaryRef = payout.getDriver().getExternalRef();
-        }
-
-        PaymentTransferRequest request = PaymentTransferRequest.builder()
-                .payoutId(payout.getId())
-                .idempotencyKey(payout.getIdempotencyKey())
-                .amount(payout.getAmount())
-                .currency(payout.getCurrency())
-                .beneficiaryName(payout.getDriver() != null ? payout.getDriver().getName() : "VENDOR_SETTLEMENT")
-                .beneficiaryRef(beneficiaryRef)
-                .build();
-
-        PaymentTransferResponse response = paymentGatewayClient.transferFunds(request);
-
-        if (response.isSuccess()) {
-            payout.setStatus(PayoutInstruction.PayoutStatus.SUCCESS);
-            payout.setProviderReference(response.getProviderReference());
-            payout.setUpdatedAt(Instant.now());
-            payoutInstructionRepository.save(payout);
-
-            event.setStatus(OutboxEvent.OutboxStatus.PROCESSED);
-            event.setProcessedAt(Instant.now());
-            outboxEventRepository.save(event);
-
-            log.info("Successfully disbursed payout {} with UTR: {}", payoutId, response.getProviderReference());
-            return true;
-        } else {
-            handleFailure(event, payout, response.getFailureReason());
-            return false;
-        }
-    }
-
-    private boolean processSettlementFinalized(OutboxEvent event) {
-        log.info("Settlement run finalized notification published: aggregateId={}", event.getAggregateId());
-        event.setStatus(OutboxEvent.OutboxStatus.PROCESSED);
-        event.setProcessedAt(Instant.now());
-        outboxEventRepository.save(event);
-        return true;
     }
 
     private void handleFailure(OutboxEvent event, PayoutInstruction payout, String reason) {
@@ -128,9 +84,7 @@ public class OutboxEventDispatcher {
             event.setProcessedAt(Instant.now());
 
             if (payout != null) {
-                payout.setStatus(PayoutInstruction.PayoutStatus.FAILED);
-                payout.setFailureReason(reason);
-                payout.setUpdatedAt(Instant.now());
+                payout.markFailed(reason);
                 payoutInstructionRepository.save(payout);
             }
         } else {

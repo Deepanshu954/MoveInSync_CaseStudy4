@@ -19,8 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Centralized REST exception handler providing RFC 7807 compliant Problem Details responses.
- * Guarantees that client applications receive predictable, structured JSON error payloads
+ * Centralized REST exception handler providing RFC 7807 compliant Problem
+ * Details responses.
+ * Guarantees that client applications receive predictable, structured JSON
+ * error payloads
  * across all validation, domain, security, and runtime error conditions.
  */
 @RestControllerAdvice
@@ -31,8 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ExceptionResponseDto> handleNotFound(
             ResourceNotFoundException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Resource not found: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI());
     }
@@ -40,8 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ExceptionResponseDto> handleDuplicate(
             DuplicateResourceException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Duplicate resource conflict: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
@@ -49,8 +49,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IdempotencyConflictException.class)
     public ResponseEntity<ExceptionResponseDto> handleIdempotencyConflict(
             IdempotencyConflictException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Idempotency conflict detected: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
@@ -58,8 +57,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<ExceptionResponseDto> handleInvalidState(
             InvalidStateTransitionException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Invalid state transition attempted: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
     }
@@ -67,8 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PolicyViolationException.class)
     public ResponseEntity<ExceptionResponseDto> handlePolicyViolation(
             PolicyViolationException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Business policy violation: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
     }
@@ -76,8 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ExceptionResponseDto> handleBadCredentials(
             BadCredentialsException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Bad credentials attempt: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Invalid username or password", req.getRequestURI());
     }
@@ -85,20 +81,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ExceptionResponseDto> handleAccessDenied(
             AccessDeniedException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.warn("Access denied on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: You do not possess the required permissions", req.getRequestURI());
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: You do not possess the required permissions",
+                req.getRequestURI());
     }
 
     /**
-     * Handles Spring Bean Validation errors ({@code @Valid}), returning field-by-field error mappings.
+     * Handles Spring Bean Validation errors ({@code @Valid}), returning
+     * field-by-field error mappings.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationExceptionResponseDto> handleValidation(
             MethodArgumentNotValidException ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         Map<String, String> fieldErrors = new HashMap<>();
         for (FieldError fe : ex.getBindingResult().getFieldErrors()) {
             fieldErrors.put(fe.getField(), fe.getDefaultMessage());
@@ -111,32 +107,65 @@ public class GlobalExceptionHandler {
                 "Bad Request",
                 "Validation failed for one or more fields",
                 req.getRequestURI(),
-                fieldErrors
-        );
+                fieldErrors);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
+    }
+
+    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ExceptionResponseDto> handleTypeMismatch(
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Method argument type mismatch on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid parameter type: " + ex.getName(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<ExceptionResponseDto> handleNotReadable(
+            org.springframework.http.converter.HttpMessageNotReadableException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Malformed JSON payload on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Malformed JSON request payload", req.getRequestURI());
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponseDto> handleMethodNotSupported(
+            org.springframework.web.HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Method not supported on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ExceptionResponseDto> handleNoResourceFound(
+            org.springframework.web.servlet.resource.NoResourceFoundException ex,
+            HttpServletRequest req
+    ) {
+        log.warn("Resource/endpoint not found on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, "Endpoint not found: " + req.getRequestURI(), req.getRequestURI());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponseDto> handleGeneric(
             Exception ex,
-            HttpServletRequest req
-    ) {
+            HttpServletRequest req) {
         log.error("Unhandled internal server error on {}: {}", req.getRequestURI(), ex.getMessage(), ex);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal server error occurred", req.getRequestURI());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected internal server error occurred",
+                req.getRequestURI());
     }
 
     private ResponseEntity<ExceptionResponseDto> buildErrorResponse(
             HttpStatus status,
             String message,
-            String uri
-    ) {
+            String uri) {
         ExceptionResponseDto dto = new ExceptionResponseDto(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 message,
-                uri
-        );
+                uri);
         return ResponseEntity.status(status).body(dto);
     }
 }

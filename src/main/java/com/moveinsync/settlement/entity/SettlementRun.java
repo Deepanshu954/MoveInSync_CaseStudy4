@@ -1,5 +1,6 @@
 package com.moveinsync.settlement.entity;
 
+import com.moveinsync.settlement.common.exception.InvalidStateTransitionException;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ import java.time.LocalDate;
  *
  * <p>Enforces strict state transitions:
  * <pre>
- *   PENDING -> PROCESSING -> APPROVED -> FINALIZED (or FAILED / REJECTED)
+ *   PENDING -> PROCESSING -> CALCULATED -> UNDER_REVIEW -> APPROVED -> FINALIZED (or FAILED)
  * </pre>
  *
  * @author MoveInSync Core Settlement Team
@@ -119,6 +120,56 @@ public class SettlementRun {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private Instant updatedAt = Instant.now();
+
+    /**
+     * Domain state transition: moves run to UNDER_REVIEW.
+     */
+    public void moveToReview(String reviewedBy) {
+        if (this.status != RunStatus.CALCULATED) {
+            throw new InvalidStateTransitionException(
+                    "Cannot move to UNDER_REVIEW from status: " + this.status + ". Must be CALCULATED."
+            );
+        }
+        this.status = RunStatus.UNDER_REVIEW;
+        this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Domain state transition: approves the calculated settlement run.
+     */
+    public void approve(String approver) {
+        if (this.status != RunStatus.CALCULATED && this.status != RunStatus.UNDER_REVIEW) {
+            throw new InvalidStateTransitionException(
+                    "Cannot approve SettlementRun in status: " + this.status + ". Must be CALCULATED or UNDER_REVIEW."
+            );
+        }
+        this.status = RunStatus.APPROVED;
+        this.approvedBy = (approver != null && !approver.isBlank()) ? approver : "FINANCE_DIRECTOR";
+        this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Domain state transition: finalizes the approved settlement run for payout.
+     */
+    public void finalizeRun(String finalizer) {
+        if (this.status != RunStatus.APPROVED) {
+            throw new InvalidStateTransitionException(
+                    "Cannot finalize SettlementRun in status: " + this.status + ". Must be APPROVED first."
+            );
+        }
+        this.status = RunStatus.FINALIZED;
+        this.finalizedBy = (finalizer != null && !finalizer.isBlank()) ? finalizer : "FINANCE_ADMIN";
+        this.updatedAt = Instant.now();
+    }
+
+    /**
+     * Domain state transition: marks calculation run as failed.
+     */
+    public void fail(String error) {
+        this.status = RunStatus.FAILED;
+        this.errorMessage = error;
+        this.updatedAt = Instant.now();
+    }
 
     public enum RunType {
         ORIGINAL, ADJUSTMENT

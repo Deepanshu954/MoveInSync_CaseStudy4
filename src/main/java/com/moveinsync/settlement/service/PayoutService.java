@@ -27,14 +27,14 @@ public class PayoutService {
     public PayoutInstructionResponseDto getPayoutById(Long id) {
         PayoutInstruction payout = payoutInstructionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PayoutInstruction not found with id: " + id));
-        return toDto(payout);
+        return PayoutInstructionResponseDto.fromEntity(payout);
     }
 
     @Transactional(readOnly = true)
     @ExecutionTime
     public List<PayoutInstructionResponseDto> getPayoutsByRunId(Long runId) {
         return payoutInstructionRepository.findBySettlementRunId(runId).stream()
-                .map(this::toDto)
+                .map(PayoutInstructionResponseDto::fromEntity)
                 .toList();
     }
 
@@ -42,7 +42,7 @@ public class PayoutService {
     @ExecutionTime
     public List<PayoutInstructionResponseDto> getPayoutsByDriverId(Long driverId) {
         return payoutInstructionRepository.findByDriverId(driverId).stream()
-                .map(this::toDto)
+                .map(PayoutInstructionResponseDto::fromEntity)
                 .toList();
     }
 
@@ -56,37 +56,28 @@ public class PayoutService {
         PayoutInstruction payout = payoutInstructionRepository.findById(webhookDto.getPayoutId())
                 .orElseThrow(() -> new ResourceNotFoundException("PayoutInstruction not found with id: " + webhookDto.getPayoutId()));
 
-        payout.setStatus(webhookDto.getStatus());
-        if (webhookDto.getProviderReference() != null && !webhookDto.getProviderReference().isBlank()) {
-            payout.setProviderReference(webhookDto.getProviderReference());
+        if (webhookDto.getStatus() == PayoutInstruction.PayoutStatus.SUCCESS) {
+            payout.markSuccess(webhookDto.getProviderReference());
+        } else if (webhookDto.getStatus() == PayoutInstruction.PayoutStatus.FAILED) {
+            payout.markFailed(webhookDto.getFailureReason());
+        } else {
+            payout.setStatus(webhookDto.getStatus());
+            if (webhookDto.getProviderReference() != null && !webhookDto.getProviderReference().isBlank()) {
+                payout.setProviderReference(webhookDto.getProviderReference());
+            }
+            if (webhookDto.getFailureReason() != null) {
+                payout.setFailureReason(webhookDto.getFailureReason());
+            }
+            payout.setUpdatedAt(Instant.now());
         }
-        if (webhookDto.getFailureReason() != null) {
-            payout.setFailureReason(webhookDto.getFailureReason());
-        }
-        payout.setUpdatedAt(Instant.now());
         payoutInstructionRepository.save(payout);
 
         log.info("Processed banking webhook for payout {}: new status={}, UTR={}",
                 payout.getId(), payout.getStatus(), payout.getProviderReference());
-        return toDto(payout);
+        return PayoutInstructionResponseDto.fromEntity(payout);
     }
 
     public PayoutInstructionResponseDto toDto(PayoutInstruction p) {
-        return PayoutInstructionResponseDto.builder()
-                .id(p.getId())
-                .settlementRunId(p.getSettlementRun().getId())
-                .vendorId(p.getVendor().getId())
-                .driverId(p.getDriver() != null ? p.getDriver().getId() : null)
-                .driverName(p.getDriver() != null ? p.getDriver().getName() : null)
-                .driverExternalRef(p.getDriver() != null ? p.getDriver().getExternalRef() : null)
-                .amount(p.getAmount())
-                .currency(p.getCurrency())
-                .idempotencyKey(p.getIdempotencyKey())
-                .status(p.getStatus())
-                .providerReference(p.getProviderReference())
-                .failureReason(p.getFailureReason())
-                .createdAt(p.getCreatedAt())
-                .updatedAt(p.getUpdatedAt())
-                .build();
+        return PayoutInstructionResponseDto.fromEntity(p);
     }
 }

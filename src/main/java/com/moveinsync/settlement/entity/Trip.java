@@ -76,6 +76,16 @@ public class Trip {
     @Builder.Default
     private Instant updatedAt = Instant.now();
 
+    public void markDisputed() {
+        this.status = TripStatus.DISPUTED;
+        this.updatedAt = Instant.now();
+    }
+
+    public void restoreCompleted() {
+        this.status = TripStatus.COMPLETED;
+        this.updatedAt = Instant.now();
+    }
+
     public enum DutyType {
         TRIP, DUTY
     }

@@ -16,6 +16,7 @@
 	<description>MoveInSync Vendor and Driver Settlement Engine (Case Study 4)</description>
 
 	<properties>
+		<java21.home>/opt/homebrew/opt/openjdk@21</java21.home>
 		<testcontainers.version>1.20.4</testcontainers.version>
 		<java.version>21</java.version>
 		<springdoc.version>2.8.4</springdoc.version>
@@ -151,6 +152,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
+					<release>21</release>
+					<fork>true</fork>
+					<executable>${java21.home}/bin/javac</executable>
 					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>

@@ -37,7 +37,8 @@ public class OutboxProcessorTask {
      */
     @ExecutionTime
     public OutboxProcessResultDto processPendingEvents() {
-        List<OutboxEvent> pendingEvents = outboxEventRepository.findPendingEventsForProcessing(50);
+        List<OutboxEvent> pendingEvents = outboxEventRepository
+                .findPendingEventsForProcessing(50);
 
         if (pendingEvents.isEmpty()) {
             return OutboxProcessResultDto.builder()
@@ -53,7 +54,8 @@ public class OutboxProcessorTask {
         int failed = 0;
 
         for (OutboxEvent event : pendingEvents) {
-            boolean success = outboxEventDispatcher.dispatchSingleEvent(event);
+            boolean success = outboxEventDispatcher
+                    .dispatchSingleEvent(event);
             if (success) {
                 processed++;
             } else {
@@ -77,15 +79,16 @@ public class OutboxProcessorTask {
      * Manually retries a specific dead-lettered event from the DLQ.
      */
     public boolean retrySingleEvent(Long eventId) {
-        OutboxEvent event = outboxEventRepository.findById(eventId).orElse(null);
+        OutboxEvent event = outboxEventRepository
+                .findById(eventId).orElse(null);
         if (event == null) {
             return false;
         }
         event.setStatus(OutboxEvent.OutboxStatus.PENDING);
-        event.setRetryCount(0);
-        event.setProcessedAt(null);
+        event.requeue();
         outboxEventRepository.save(event);
-        return outboxEventDispatcher.dispatchSingleEvent(event);
+        return outboxEventDispatcher
+                .dispatchSingleEvent(event);
     }
 
     /**
@@ -96,9 +99,7 @@ public class OutboxProcessorTask {
                 OutboxEvent.OutboxStatus.FAILED
         );
         for (OutboxEvent event : failedEvents) {
-            event.setStatus(OutboxEvent.OutboxStatus.PENDING);
-            event.setRetryCount(0);
-            event.setProcessedAt(null);
+            event.requeue();
         }
         outboxEventRepository.saveAll(failedEvents);
         return failedEvents.size();

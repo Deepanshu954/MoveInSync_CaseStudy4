@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author MoveInSync Core Settlement Team
  */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping({"/api/v1/auth", "/api/auth"})
 @Tag(name = "Authentication", description = "Operations for user authentication and Bearer JWT token generation")
 public class AuthController {
 

@@ -67,6 +67,18 @@ public class PayoutInstruction {
     @Builder.Default
     private Instant updatedAt = Instant.now();
 
+    public void markSuccess(String ref) {
+        this.status = PayoutStatus.SUCCESS;
+        this.providerReference = ref;
+        this.updatedAt = Instant.now();
+    }
+
+    public void markFailed(String reason) {
+        this.status = PayoutStatus.FAILED;
+        this.failureReason = reason;
+        this.updatedAt = Instant.now();
+    }
+
     public enum PayoutStatus {
         PENDING, INITIATED, SUCCESS, FAILED, CANCELLED
     }

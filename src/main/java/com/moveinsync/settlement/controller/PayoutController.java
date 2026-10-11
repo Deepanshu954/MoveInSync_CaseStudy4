@@ -35,7 +35,7 @@ public class PayoutController {
     private final OutboxProcessorTask outboxProcessorTask;
     private final OutboxEventRepository outboxEventRepository;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'VENDOR_ADMIN', 'SYSTEM_ADMIN')")
     @Operation(summary = "Get banking payout instruction by ID")
     public ResponseEntity<PayoutInstructionResponseDto> getPayoutById(@PathVariable Long id) {
@@ -63,18 +63,18 @@ public class PayoutController {
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
     @Operation(summary = "List all pending outbox events queued for bank dispatch")
     public ResponseEntity<List<OutboxEventResponseDto>> getPendingOutboxEvents() {
-        return ResponseEntity.ok(toDtoList(outboxEventRepository.findByStatusOrderByCreatedAtAsc(
+        return ResponseEntity.ok(outboxEventRepository.findByStatusOrderByCreatedAtAsc(
                 OutboxEvent.OutboxStatus.PENDING
-        )));
+        ).stream().map(OutboxEventResponseDto::fromEntity).toList());
     }
 
     @GetMapping("/outbox/failed")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
     @Operation(summary = "List all dead-lettered outbox events (DLQ) requiring ops inspection")
     public ResponseEntity<List<OutboxEventResponseDto>> getFailedOutboxEvents() {
-        return ResponseEntity.ok(toDtoList(outboxEventRepository.findByStatusOrderByCreatedAtDesc(
+        return ResponseEntity.ok(outboxEventRepository.findByStatusOrderByCreatedAtDesc(
                 OutboxEvent.OutboxStatus.FAILED
-        )));
+        ).stream().map(OutboxEventResponseDto::fromEntity).toList());
     }
 
     @PostMapping("/outbox/retry/{eventId}")
@@ -102,20 +102,5 @@ public class PayoutController {
             @Valid @RequestBody BankingWebhookRequestDto request
     ) {
         return ResponseEntity.ok(payoutService.handleBankingWebhook(request));
-    }
-
-    private List<OutboxEventResponseDto> toDtoList(List<OutboxEvent> events) {
-        return events.stream().map(e -> OutboxEventResponseDto.builder()
-                .id(e.getId())
-                .aggregateType(e.getAggregateType())
-                .aggregateId(e.getAggregateId())
-                .eventType(e.getEventType())
-                .payload(e.getPayload())
-                .status(e.getStatus())
-                .retryCount(e.getRetryCount())
-                .createdAt(e.getCreatedAt())
-                .processedAt(e.getProcessedAt())
-                .build()
-        ).toList();
     }
 }

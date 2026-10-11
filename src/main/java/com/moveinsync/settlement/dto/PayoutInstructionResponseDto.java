@@ -26,4 +26,24 @@ public class PayoutInstructionResponseDto {
     private String failureReason;
     private Instant createdAt;
     private Instant updatedAt;
+
+    public static PayoutInstructionResponseDto fromEntity(PayoutInstruction p) {
+        if (p == null) return null;
+        return PayoutInstructionResponseDto.builder()
+                .id(p.getId())
+                .settlementRunId(p.getSettlementRun() != null ? p.getSettlementRun().getId() : null)
+                .vendorId(p.getVendor() != null ? p.getVendor().getId() : null)
+                .driverId(p.getDriver() != null ? p.getDriver().getId() : null)
+                .driverName(p.getDriver() != null ? p.getDriver().getName() : null)
+                .driverExternalRef(p.getDriver() != null ? p.getDriver().getExternalRef() : null)
+                .amount(p.getAmount())
+                .currency(p.getCurrency())
+                .idempotencyKey(p.getIdempotencyKey())
+                .status(p.getStatus())
+                .providerReference(p.getProviderReference())
+                .failureReason(p.getFailureReason())
+                .createdAt(p.getCreatedAt())
+                .updatedAt(p.getUpdatedAt())
+                .build();
+    }
 }

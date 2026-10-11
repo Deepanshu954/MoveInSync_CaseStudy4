@@ -66,6 +66,21 @@ public class VendorInvoice {
     @Builder.Default
     private Instant updatedAt = Instant.now();
 
+    public void markMatched() {
+        this.status = InvoiceStatus.MATCHED;
+        this.updatedAt = Instant.now();
+    }
+
+    public void markDiscrepancy() {
+        this.status = InvoiceStatus.DISCREPANCY;
+        this.updatedAt = Instant.now();
+    }
+
+    public void markResolved() {
+        this.status = InvoiceStatus.RESOLVED;
+        this.updatedAt = Instant.now();
+    }
+
     public enum InvoiceStatus {
         PENDING, MATCHED, DISCREPANCY, RESOLVED
     }

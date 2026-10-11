@@ -1,5 +1,6 @@
 package com.moveinsync.settlement.entity;
 
+import com.moveinsync.settlement.common.exception.InvalidStateTransitionException;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
@@ -12,7 +13,7 @@ import java.time.Instant;
  * <p>Tracks claimed monetary difference, supporting dispute evidence, operational comments,
  * and review lifecycle states:
  * <pre>
- *   OPEN -> UNDER_REVIEW -> RESOLVED (or REJECTED)
+ *   OPEN -> UNDER_REVIEW -> APPROVED (or REJECTED)
  * </pre>
  *
  * @author MoveInSync Core Settlement Team
@@ -66,6 +67,36 @@ public class Dispute {
     @Column(name = "updated_at", nullable = false)
     @Builder.Default
     private Instant updatedAt = Instant.now();
+
+    public void approve(String approver, String resolutionComments) {
+        if (this.status != DisputeStatus.OPEN && this.status != DisputeStatus.UNDER_REVIEW) {
+            throw new InvalidStateTransitionException("Cannot approve dispute in status: " + this.status);
+        }
+        this.status = DisputeStatus.APPROVED;
+        this.approvedBy = (approver != null && !approver.isBlank()) ? approver : "APPROVER";
+        this.resolution = resolutionComments != null ? resolutionComments : "Dispute approved";
+        this.resolvedAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    public void reject(String approver, String resolutionComments) {
+        if (this.status != DisputeStatus.OPEN && this.status != DisputeStatus.UNDER_REVIEW) {
+            throw new InvalidStateTransitionException("Cannot reject dispute in status: " + this.status);
+        }
+        this.status = DisputeStatus.REJECTED;
+        this.approvedBy = (approver != null && !approver.isBlank()) ? approver : "APPROVER";
+        this.resolution = resolutionComments != null ? resolutionComments : "Dispute rejected";
+        this.resolvedAt = Instant.now();
+        this.updatedAt = Instant.now();
+    }
+
+    public void markUnderReview() {
+        if (this.status != DisputeStatus.OPEN) {
+            throw new InvalidStateTransitionException("Cannot mark dispute under review from status: " + this.status);
+        }
+        this.status = DisputeStatus.UNDER_REVIEW;
+        this.updatedAt = Instant.now();
+    }
 
     public enum DisputeStatus {
         OPEN, UNDER_REVIEW, APPROVED, REJECTED, RESOLVED

@@ -55,11 +55,12 @@ public class SettlementController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id:[0-9]+}")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'VENDOR_ADMIN', 'SYSTEM_ADMIN')")
     @Operation(summary = "Get settlement run details with all driver payslips and itemized lines")
     public ResponseEntity<SettlementRunResponseDto> getSettlementRun(@PathVariable Long id) {
-        return ResponseEntity.ok(settlementService.getSettlementRun(id));
+        return ResponseEntity
+                .ok(settlementService.getSettlementRun(id));
     }
 
     @PostMapping("/{id}/approve")
@@ -70,7 +71,8 @@ public class SettlementController {
             Authentication authentication
     ) {
         String username = authentication != null ? authentication.getName() : "APPROVER";
-        return ResponseEntity.ok(settlementService.approveSettlementRun(id, username));
+        return ResponseEntity
+                .ok(settlementService.approveSettlementRun(id, username));
     }
     @PostMapping("/{id}/review")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'SYSTEM_ADMIN')")
@@ -80,7 +82,8 @@ public class SettlementController {
             Authentication authentication
     ) {
         String username = authentication != null ? authentication.getName() : "APPROVER";
-        return ResponseEntity.ok(settlementService.moveToReview(id, username));
+        return ResponseEntity
+                .ok(settlementService.moveToReview(id, username));
     }
 
     @PostMapping("/{id}/finalize")
@@ -91,13 +94,15 @@ public class SettlementController {
             Authentication authentication
     ) {
         String username = authentication != null ? authentication.getName() : "APPROVER";
-        return ResponseEntity.ok(settlementService.finalizeSettlementRun(id, username));
+        return ResponseEntity
+                .ok(settlementService.finalizeSettlementRun(id, username));
     }
 
     @GetMapping("/{id}/payouts")
     @PreAuthorize("hasAnyRole('SETTLEMENT_ADMIN', 'APPROVER', 'VENDOR_ADMIN', 'SYSTEM_ADMIN')")
     @Operation(summary = "List all banking payout instructions generated for a settlement run")
     public ResponseEntity<List<PayoutInstructionResponseDto>> getRunPayouts(@PathVariable Long id) {
-        return ResponseEntity.ok(settlementService.getRunPayouts(id));
+        return ResponseEntity
+                .ok(settlementService.getRunPayouts(id));
     }
 }

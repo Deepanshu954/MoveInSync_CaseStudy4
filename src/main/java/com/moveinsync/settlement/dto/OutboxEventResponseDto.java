@@ -20,4 +20,19 @@ public class OutboxEventResponseDto {
     private Integer retryCount;
     private Instant createdAt;
     private Instant processedAt;
+
+    public static OutboxEventResponseDto fromEntity(OutboxEvent e) {
+        if (e == null) return null;
+        return OutboxEventResponseDto.builder()
+                .id(e.getId())
+                .aggregateType(e.getAggregateType())
+                .aggregateId(e.getAggregateId())
+                .eventType(e.getEventType())
+                .payload(e.getPayload())
+                .status(e.getStatus())
+                .retryCount(e.getRetryCount())
+                .createdAt(e.getCreatedAt())
+                .processedAt(e.getProcessedAt())
+                .build();
+    }
 }

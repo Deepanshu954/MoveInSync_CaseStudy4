@@ -19,9 +19,12 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 /**
- * Declarative AOP Aspect intercepting methods annotated with {@link Idempotent}.
+ * Declarative AOP Aspect intercepting methods annotated with
+ * {@link Idempotent}.
  *
- * <p>Handles Tier-1 HTTP Request Idempotency transparently before the controller method executes.
+ * <p>
+ * Handles Tier-1 HTTP Request Idempotency transparently before the controller
+ * method executes.
  *
  * @author MoveInSync Core Settlement Team
  */
@@ -49,13 +52,14 @@ public class IdempotencyAspect {
             return joinPoint.proceed();
         }
 
-        // Find request body argument (ignore String headers, Servlet objects, Authentication tokens)
+        // Find request body argument (ignore String headers, Servlet objects,
+        // Authentication tokens)
         Object requestBody = null;
         for (Object arg : joinPoint.getArgs()) {
-            if (arg != null 
-                    && !(arg instanceof String) 
-                    && !(arg instanceof HttpServletRequest) 
-                    && !arg.getClass().getName().contains("Authentication") 
+            if (arg != null
+                    && !(arg instanceof String)
+                    && !(arg instanceof HttpServletRequest)
+                    && !arg.getClass().getName().contains("Authentication")
                     && !arg.getClass().getName().contains("Principal")) {
                 requestBody = arg;
                 break;
@@ -76,8 +80,10 @@ public class IdempotencyAspect {
         if (cached.isPresent()) {
             IdempotencyRecord record = cached.get();
             log.info("IdempotencyAspect: Returning cached response for key {}", idempotencyKey);
-            SettlementRunResponseDto cachedDto = objectMapper.readValue(record.getResponsePayload(), SettlementRunResponseDto.class);
-            return ResponseEntity.status(record.getResponseStatus() != null ? record.getResponseStatus() : 200).body(cachedDto);
+            SettlementRunResponseDto cachedDto = objectMapper.readValue(record.getResponsePayload(),
+                    SettlementRunResponseDto.class);
+            return ResponseEntity.status(record.getResponseStatus() != null ? record.getResponseStatus() : 200)
+                    .body(cachedDto);
         }
 
         try {

@@ -56,6 +56,17 @@ public class OutboxEvent {
     @Column(name = "processed_at")
     private Instant processedAt;
 
+    public void markProcessed() {
+        this.status = OutboxStatus.PROCESSED;
+        this.processedAt = Instant.now();
+    }
+
+    public void requeue() {
+        this.status = OutboxStatus.PENDING;
+        this.retryCount = 0;
+        this.processedAt = null;
+    }
+
     public enum OutboxStatus {
         PENDING, PROCESSED, FAILED
     }
