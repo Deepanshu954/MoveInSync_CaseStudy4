@@ -17,20 +17,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Pure calculation engine evaluating safety infractions and SLA penalty deductions.
+ * Calculates penalty deductions for safety and SLA violations.
+ * Groups violations by frequency window (daily, weekly, monthly), enforces max occurrence caps,
+ * and ignores dismissed violations. Deductions are recorded as negative amounts.
  *
- * <p>Key Invariants:
- * <ol>
- *   <li><b>Dismissal Exclusion:</b> Violations marked {@link TripViolation.ViolationStatus#DISMISSED}
- *       are skipped with zero financial deduction.</li>
- *   <li><b>Chronological Window Grouping:</b> Violations are partitioned into frequency buckets
- *       ({@code DAILY}, {@code WEEKLY}, {@code MONTHLY}) based on event timestamp in IST.</li>
- *   <li><b>Occurrence Capping:</b> Violations within each frequency bucket exceeding
- *       {@code policy.maxOccurrences} are capped (₹0 deduction) to prevent punitive debt spirals.</li>
- *   <li><b>Signed Arithmetic:</b> Deductions are signed negative values (e.g. {@code -₹500.00}).</li>
- * </ol>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

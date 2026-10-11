@@ -14,7 +14,7 @@ import java.time.Instant;
  * run was already closed and paid, an adjustment is booked into the subsequent billing cycle
  * to disburse owed compensation or recover overpayments without modifying historical ledgers.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "settlement_adjustment", uniqueConstraints = {

@@ -18,7 +18,7 @@ import java.time.Instant;
  *   <li>{@code DELAYED_PICKUP}: Excessive pickup punctuality breach (> 15 minutes)</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "trip_violation", uniqueConstraints = {

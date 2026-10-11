@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Repository for user accounts and RBAC security credentials.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface UserRepository extends JpaRepository<AppUser, Long> {

@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Repository for commercial driver profiles.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long> {

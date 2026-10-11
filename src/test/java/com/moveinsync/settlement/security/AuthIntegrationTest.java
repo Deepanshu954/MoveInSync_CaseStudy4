@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *   <li><b>DTO Field Validation:</b> Blank usernames trigger JSR-380 validation mapped to 400 Bad Request.</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @SpringBootTest
 @AutoConfigureMockMvc

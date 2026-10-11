@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Repository for immutable regulatory compliance audit journals.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface AuditEventRepository extends JpaRepository<AuditEvent, Long> {

@@ -9,7 +9,7 @@ import java.time.Instant;
  *
  * <p>Stores request hashes and cached response bodies for 24 hours to handle network retry storms.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "idempotency_record")

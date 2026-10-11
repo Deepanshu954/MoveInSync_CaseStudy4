@@ -15,7 +15,7 @@ import java.time.Instant;
  *   <li><b>PEAK_HOURS:</b> Shift allowances for difficult night or early-morning rosters</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "incentive_policy")

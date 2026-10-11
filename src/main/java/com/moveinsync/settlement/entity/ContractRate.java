@@ -20,7 +20,7 @@ import java.time.Instant;
  *   <li>{@code PER_DUTY}: duty shift or vehicle day-rate billing</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "contract_rate")

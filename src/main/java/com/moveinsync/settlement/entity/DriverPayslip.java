@@ -17,7 +17,7 @@ import java.time.Instant;
  *
  * <p>Serves as the legal pay advice document provided to drivers via the mobile app.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "driver_payslip", uniqueConstraints = {

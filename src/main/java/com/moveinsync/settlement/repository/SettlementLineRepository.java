@@ -12,7 +12,7 @@ import java.util.Optional;
  *
  * <p>Tracks base trip earnings, incentive additions, violation deductions, and TDS withholding lines.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface SettlementLineRepository extends JpaRepository<SettlementLine, Long> {

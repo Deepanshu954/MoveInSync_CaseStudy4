@@ -11,7 +11,7 @@ import java.time.Instant;
  * <p>Calculates variance deltas and verifies tolerance limits (e.g. 0.5% variance threshold)
  * before releasing final disbursement batches.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "reconciliation")

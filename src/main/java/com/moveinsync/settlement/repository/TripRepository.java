@@ -15,7 +15,7 @@ import java.util.List;
  * <p>Uses explicit {@code JOIN FETCH} directives on driver and contract entities
  * to eliminate Hibernate N+1 query cascades during 10,000+ trip batch calculations.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface TripRepository extends JpaRepository<Trip, Long> {

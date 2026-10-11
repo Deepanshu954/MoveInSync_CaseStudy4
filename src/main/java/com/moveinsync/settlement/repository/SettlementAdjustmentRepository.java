@@ -11,7 +11,7 @@ import java.util.List;
  * <p>Preserves immutable historical ledgers by booking approved dispute corrections
  * into subsequent settlement cycles.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface SettlementAdjustmentRepository extends JpaRepository<SettlementAdjustment, Long> {

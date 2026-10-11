@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * <p>Registers JWT Bearer authentication scheme and API metadata.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Configuration
 @OpenAPIDefinition(
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
                 title = "MoveInSync Vendor & Driver Settlement Engine API",
                 version = "1.0.0",
                 description = "Enterprise settlement calculation, reconciliation, dispute delta resolution, and transactional outbox engine.",
-                contact = @Contact(name = "MoveInSync Core Settlement Team", email = "settlement@moveinsync.com"),
+                contact = @Contact(name = "Deepanshu", email = "settlement@moveinsync.com"),
                 license = @License(name = "MoveInSync Proprietary", url = "https://www.moveinsync.com")
         ),
         servers = {

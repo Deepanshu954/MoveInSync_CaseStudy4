@@ -15,7 +15,7 @@ import java.time.Instant;
  *   <li>20.0% higher deduction under Section 206AA if PAN is missing or invalid</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "tax_config")

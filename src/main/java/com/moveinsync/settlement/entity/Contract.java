@@ -16,7 +16,7 @@ import java.time.Instant;
  *   <li>Time-sliced rate amendments governed via {@link ContractRate}</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "contract")

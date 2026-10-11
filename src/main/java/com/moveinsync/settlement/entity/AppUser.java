@@ -10,7 +10,7 @@ import java.time.Instant;
  * <p>Roles include {@code ROLE_SETTLEMENT_ADMIN}, {@code ROLE_OPERATIONS_EXECUTIVE},
  * {@code ROLE_FINANCE_AUDITOR}, and {@code ROLE_VENDOR_VIEWER}.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "app_user")

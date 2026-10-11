@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Repository for corporate client business units and campus zones.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface BusinessUnitRepository extends JpaRepository<BusinessUnit, Long> {

@@ -24,29 +24,11 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Benchmark stress test fulfilling MoveInSync Case Study 4 core requirement:
- * <p>
- * <i>"Prove with a test that per-line amounts reconcile exactly to the total, even over thousands of trips."</i>
+ * Stress test verifying that individual line items reconcile exactly to the total net amount
+ * over a high volume of trips (10,000 trips across 50 drivers).
+ * Tests rate card revisions, violations, and TDS calculations without rounding errors.
  *
- * <p>Simulates:
- * <ul>
- *   <li>10,000 synthetic commute trips across 30 days</li>
- *   <li>50 distinct drivers contracted under fleet vendors</li>
- *   <li>Alternating {@code TRIP} and {@code DUTY} assignments</li>
- *   <li>Fractional contract rates with mid-month Oct 15 rate revisions</li>
- *   <li>500 telematics safety violations with frequency capping</li>
- *   <li>Section 194C statutory TDS withholding above ₹30,000 threshold</li>
- * </ul>
- *
- * <p>Asserts:
- * <ul>
- *   <li><b>Exact Driver Payslip Invariant:</b> $\text{payslip.net} \equiv \sum \text{signedLineItems}$</li>
- *   <li><b>Exact Run Total Invariant:</b> $\text{run.netTotal} \equiv \sum \text{driverPayslips.net}$</li>
- *   <li><b>Zero Drift:</b> Total discrepancy $\equiv 0.00$ paise!</li>
- *   <li><b>High Throughput:</b> Calculation completed in $< 2.0$ seconds.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 class ThousandsOfTripsStressTest {
 

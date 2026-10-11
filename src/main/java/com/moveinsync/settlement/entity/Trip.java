@@ -18,7 +18,7 @@ import java.time.Instant;
  *   SCHEDULED -> IN_PROGRESS -> COMPLETED (or CANCELLED, NO_SHOW, DISPUTED)
  * </pre>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "trip", uniqueConstraints = {

@@ -9,12 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Pure calculation and validation component for financial invariant verification.
+ * Validates settlement payout totals match payslip sums before triggering disbursements.
  *
- * <p>Enforces zero mathematical drift between the settlement run total net pay
- * and the sum of individual driver payslips prior to payout disbursement.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 public class PayoutCalculator extends FinancialInvariantValidator {

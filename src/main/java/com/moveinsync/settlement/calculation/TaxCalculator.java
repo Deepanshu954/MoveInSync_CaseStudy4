@@ -13,27 +13,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Pure calculation engine evaluating statutory Indian Income Tax Section 194C TDS withholding.
+ * Calculates TDS (Tax Deducted at Source) under Section 194C.
+ * Applies withholding tax on taxable earnings exceeding the configured exemption threshold.
+ * Deductions are stored as negative amounts.
  *
- * <p>Statutory Rules:
- * <ol>
- *   <li><b>Cumulative Threshold Exemption:</b>
- *       TDS applies strictly to the earnings exceeding the monthly exemption limit (e.g. ₹30,000 threshold).
- *       <pre>
- *         TaxableEarnings = GrossBasePay + TotalIncentives
- *         TaxableExcess = max(0, TaxableEarnings - MonthlyThreshold)
- *       </pre>
- *   </li>
- *   <li><b>Statutory Withholding:</b>
- *       If {@code TaxableExcess > 0}, TDS is deducted as:
- *       <pre>
- *         TDS = (TaxableExcess * RatePercent) / 100  [rounded HALF_UP to 2 decimal places]
- *       </pre>
- *   </li>
- *   <li><b>Signed Arithmetic:</b> Withholding is signed negative (e.g. {@code -₹200.00}).</li>
- * </ol>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

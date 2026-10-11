@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Response DTO representing an atomic line item in a payslip ledger.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Getter
 @Setter

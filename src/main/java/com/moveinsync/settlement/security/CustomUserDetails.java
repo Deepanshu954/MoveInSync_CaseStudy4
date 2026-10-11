@@ -12,7 +12,7 @@ import java.util.Collections;
 /**
  * UserDetails adapter wrapping AppUser for Spring Security authentication and RBAC.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 public class CustomUserDetails implements UserDetails {
 

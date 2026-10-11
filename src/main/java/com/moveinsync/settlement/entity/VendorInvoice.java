@@ -14,7 +14,7 @@ import java.time.LocalDate;
  * <p>Includes vendor-claimed trip totals, toll expenses, GST breakdown (CGST/SGST/IGST),
  * and claimed gross/net billing amounts for three-way reconciliation against MoveInSync records.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "vendor_invoice", uniqueConstraints = {

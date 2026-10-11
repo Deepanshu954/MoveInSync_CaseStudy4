@@ -8,7 +8,7 @@ import com.moveinsync.settlement.entity.OutboxEvent;
  * <p>Adheres to the Open/Closed Principle: new events can be added without modifying
  * the core dispatcher loop.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 public interface OutboxEventHandler {
 

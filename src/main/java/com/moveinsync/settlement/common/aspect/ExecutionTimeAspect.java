@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * Aspect logging precise execution latency for performance-critical calculation methods.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Aspect
 @Component

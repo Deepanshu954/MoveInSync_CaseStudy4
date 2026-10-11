@@ -11,7 +11,7 @@ import java.time.Instant;
  * <p>Dispatched to corporate banking payment rails (RazorpayX, Cashfree, ICICI Direct).
  * Tracks bank account IFSC, beneficiary name, transfer reference (UTR), and disbursement lifecycle.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "payout_instruction")

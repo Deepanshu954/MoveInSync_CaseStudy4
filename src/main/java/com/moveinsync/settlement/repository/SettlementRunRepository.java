@@ -21,7 +21,7 @@ import java.util.Optional;
  * <p>Provides pessimistic locking ({@code PESSIMISTIC_WRITE}) with a 5000ms query timeout
  * during state transitions and duplicate run prevention for designated billing windows.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface SettlementRunRepository extends JpaRepository<SettlementRun, Long> {

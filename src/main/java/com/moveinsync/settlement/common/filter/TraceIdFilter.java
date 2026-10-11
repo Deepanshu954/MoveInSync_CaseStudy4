@@ -20,7 +20,7 @@ import java.util.UUID;
  * <p>Inspects incoming {@code X-Trace-Id} headers, populates SLF4J MDC context,
  * and echoes the correlation token back in outgoing response headers.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

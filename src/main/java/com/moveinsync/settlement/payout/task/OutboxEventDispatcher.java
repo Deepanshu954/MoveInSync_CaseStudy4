@@ -16,17 +16,10 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Isolated dispatcher executing single outbox event deliveries within independent transactions.
+ * Dispatches individual outbox events in separate transactions so failures in one event
+ * do not block or roll back other pending events. Handles retries and failure status updates.
  *
- * <p>Architectural guarantees:
- * <ul>
- *   <li><b>Fault Isolation:</b> A failure or timeout in one payment does not roll back sibling events.</li>
- *   <li><b>Short-Lived DB Locks:</b> Network I/O is bounded and database locks are quickly released.</li>
- *   <li><b>Automatic Dead-Lettering:</b> Permanently failed events transition to FAILED after 3 retries.</li>
- *   <li><b>Open/Closed Extensibility:</b> Delegates to {@link OutboxEventHandler} strategies.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

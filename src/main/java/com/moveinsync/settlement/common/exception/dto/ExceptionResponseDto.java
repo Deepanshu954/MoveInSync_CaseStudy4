@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * <p>Carries structured error context, HTTP status codes, timestamp, URI,
  * and correlation trace token for distributed log tracing.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Getter
 @Setter

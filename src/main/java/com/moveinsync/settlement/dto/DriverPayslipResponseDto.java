@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Summary and itemized breakdown of a single driver's payslip in a settlement run.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Getter
 @Setter

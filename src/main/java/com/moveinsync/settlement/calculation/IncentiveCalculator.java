@@ -16,22 +16,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Pure calculation engine evaluating operational performance incentives.
+ * Calculates driver incentives such as on-time bonuses, attendance bonuses,
+ * and days-worked milestones based on active incentive policies.
  *
- * <p>Supported Incentive Models:
- * <ul>
- *   <li><b>ON_TIME_BONUS:</b> Qualified when driver on-time percentage &ge; {@code thresholdPercent}.
- *       Calculated with exact {@link BigDecimal} arithmetic:
- *       <pre>
- *         onTimePercent = (onTimeTrips * 100) / totalTrips  [scale 4, rounded to scale 2 HALF_UP]
- *       </pre>
- *   </li>
- *   <li><b>WORKED_DAYS_BONUS:</b> Qualified when distinct calendar days worked within billing period &ge; {@code thresholdValue}.
- *       Calendar days are partitioned using India Standard Time ({@code Asia/Kolkata}).</li>
- *   <li><b>ATTENDANCE_BONUS:</b> Milestone attendance reward for high shift consistency.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

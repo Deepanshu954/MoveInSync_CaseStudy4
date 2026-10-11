@@ -8,7 +8,7 @@ import java.time.LocalDate;
 /**
  * Request payload for initiating or previewing a settlement calculation run.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Getter
 @Setter

@@ -19,12 +19,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * REST API for executing, previewing, retrieving, and approving batch settlement runs.
+ * REST API for calculating, previewing, retrieving, and approving settlement runs.
+ * Uses {@link Idempotent} annotation for safe retry handling on calculation endpoints.
  *
- * <p>Employs declarative {@link Idempotent} AOP annotation to guarantee Tier-1 HTTP Request
- * idempotency without polluting controller business logic.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @RestController
 @RequestMapping("/api/settlements")

@@ -11,7 +11,7 @@ import java.time.Instant;
  *
  * <p>Captures who made the modification, what entity changed, timestamp, IP address, and payload delta.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "audit_event")

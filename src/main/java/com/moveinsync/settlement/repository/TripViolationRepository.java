@@ -14,7 +14,7 @@ import java.util.List;
  *
  * <p>Captures over-speeding, route deviations, and late-night female employee escort breaches.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface TripViolationRepository extends JpaRepository<TripViolation, Long> {

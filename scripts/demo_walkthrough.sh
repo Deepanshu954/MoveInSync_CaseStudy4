@@ -44,7 +44,6 @@ PREVIEW_RESP=$(curl -s -X POST "${BASE_URL}/api/settlements/calculate" \
   -d '{
     "vendorId": 1,
     "businessUnitId": 1,
-    "businessUnitId": 1,
     "periodStart": "2026-10-01",
     "periodEnd": "2026-10-31",
     "previewOnly": true
@@ -62,7 +61,6 @@ CALC_RESP=$(curl -s -X POST "${BASE_URL}/api/settlements/calculate" \
   -H "Idempotency-Key: ${IDEM_KEY}" \
   -d '{
     "vendorId": 1,
-    "businessUnitId": 1,
     "businessUnitId": 1,
     "periodStart": "2026-10-01",
     "periodEnd": "2026-10-31",
@@ -82,7 +80,6 @@ REPEAT_RESP=$(curl -s -X POST "${BASE_URL}/api/settlements/calculate" \
   -H "Idempotency-Key: ${IDEM_KEY}" \
   -d '{
     "vendorId": 1,
-    "businessUnitId": 1,
     "businessUnitId": 1,
     "periodStart": "2026-10-01",
     "periodEnd": "2026-10-31",

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <p>Provides token acquisition capabilities for frontend dashboards, operational CLI tools,
  * and automated banking integration workers.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @RestController
 @RequestMapping({"/api/v1/auth", "/api/auth"})

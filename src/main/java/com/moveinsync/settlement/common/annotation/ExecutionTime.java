@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 /**
  * Performance metric annotation logging method execution latency in milliseconds.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

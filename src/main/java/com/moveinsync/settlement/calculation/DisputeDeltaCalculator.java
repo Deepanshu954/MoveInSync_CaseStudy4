@@ -8,13 +8,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Pure calculation engine for trip dispute delta settlement.
+ * Calculates payment deltas for resolved disputes (revised amount minus original amount)
+ * without altering existing historical run records.
  *
- * <p>Enforces Single Responsibility Principle (SRP):
- * Computes exact monetary delta (Delta = Revised - Original) without mutating
- * historical settlement runs or ledger lines.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 public class DisputeDeltaCalculator {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * <p>Tracks operational volume, throughput, and error rates across settlement runs,
  * outbox dispatch, tolerance reconciliations, and dispute resolutions.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 public class SettlementMetrics {

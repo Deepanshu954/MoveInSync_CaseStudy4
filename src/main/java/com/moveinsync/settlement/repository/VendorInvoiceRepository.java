@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Repository for vendor tax invoices submitted for settlement reconciliation.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface VendorInvoiceRepository extends JpaRepository<VendorInvoice, Long> {

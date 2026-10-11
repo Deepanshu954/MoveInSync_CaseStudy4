@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Repository for banking disbursement instructions sent to payment gateways.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface PayoutInstructionRepository extends JpaRepository<PayoutInstruction, Long> {

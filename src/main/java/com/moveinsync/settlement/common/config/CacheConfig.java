@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * <p>Caches are partitioned by domain entity type to avoid cross-domain contention
  * and allow targeted invalidation upon policy or contract rate revisions.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Configuration
 @EnableCaching

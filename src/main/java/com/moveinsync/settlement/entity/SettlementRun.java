@@ -8,24 +8,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 /**
- * Batch settlement calculation execution run for a designated billing window.
+ * Represents a monthly settlement calculation run for a vendor and business unit.
+ * Tracks total gross, incentives, penalties, tax, and net amounts across the billing period,
+ * and maintains the lifecycle status (PENDING -> CALCULATED -> UNDER_REVIEW -> APPROVED -> FINALIZED).
  *
- * <p>Orchestrates monthly vendor and driver financial calculations:
- * <ol>
- *   <li>Gathers eligible completed trips within {@code [periodStart, periodEnd)}</li>
- *   <li>Calculates baseline trip earnings via active time-sliced {@link ContractRate} cards</li>
- *   <li>Evaluates driver performance incentives (volume slabs, on-time percentage)</li>
- *   <li>Calculates safety and SLA breach penalty deductions with monthly caps</li>
- *   <li>Computes Indian statutory TDS under Section 194C (1% or 2%)</li>
- *   <li>Maintains financial balance equation: {@code NetPay = GrossPay + Incentives - Penalties - TDS}</li>
- * </ol>
- *
- * <p>Enforces strict state transitions:
- * <pre>
- *   PENDING -> PROCESSING -> CALCULATED -> UNDER_REVIEW -> APPROVED -> FINALIZED (or FAILED)
- * </pre>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "settlement_run")

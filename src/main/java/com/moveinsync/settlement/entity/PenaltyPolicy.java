@@ -11,7 +11,7 @@ import java.time.Instant;
  * <p>Specifies financial deduction amounts for infraction types along with monthly frequency caps
  * to prevent disproportionate driver indebtedness.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "penalty_policy")

@@ -13,29 +13,11 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * Pure calculation engine resolving base trip compensation from time-sliced contract rate cards.
+ * Calculates base pay for completed trips based on active contract rate cards.
+ * Handles rate card validity intervals (effectiveFrom <= completedAt < effectiveTo)
+ * and resolves version precedence when multiple rates match.
  *
- * <p>Business Rules:
- * <ol>
- *   <li><b>Duty Type Mapping:</b>
- *     <ul>
- *       <li>{@link Trip.DutyType#TRIP} maps to {@link ContractRate.ComponentType#PER_TRIP}</li>
- *       <li>{@link Trip.DutyType#DUTY} maps to {@link ContractRate.ComponentType#PER_DUTY}</li>
- *     </ul>
- *   </li>
- *   <li><b>Mid-Month Half-Open Validity Interval:</b>
- *     A rate card applies to a completed trip if and only if:
- *     <pre>
- *       rate.effectiveFrom &le; trip.completedAt &lt; rate.effectiveTo (or rate.effectiveTo is NULL)
- *     </pre>
- *   </li>
- *   <li><b>Version Precedence:</b> If multiple rate schedules match a trip's completion timestamp,
- *       the one with the latest {@code effectiveFrom} and highest {@code version} is selected.</li>
- *   <li><b>Completeness Guarantee:</b> If no active rate card matches the trip timestamp,
- *       a {@link PolicyViolationException} is thrown immediately to prevent silent billing omission.</li>
- * </ol>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

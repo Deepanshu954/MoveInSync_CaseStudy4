@@ -39,19 +39,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Enterprise service managing trip billing disputes and closed-loop delta settlements.
+ * Service managing trip billing disputes and delta adjustments.
+ * Keeps historical settlement records immutable and creates adjustments
+ * for the difference amount when disputes are resolved.
  *
- * <p>Key Guarantees:
- * <ul>
- *   <li><b>Historical Immutability:</b> Original {@link SettlementRun} and {@link SettlementLine}
- *       records remain 100% immutable and are never modified or recalculated.</li>
- *   <li><b>Delta-Only Payouts:</b> Resolves only the financial difference
- *       (&Delta; = Revised &minus; Original) into an append-only {@link SettlementAdjustment}.</li>
- *   <li><b>Closed-Loop Disbursement:</b> Emits a dedicated {@link PayoutInstruction} and
- *       queues a Transactional Outbox event for immediate payment rail disbursement.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

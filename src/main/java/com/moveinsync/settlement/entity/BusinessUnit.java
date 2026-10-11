@@ -11,7 +11,7 @@ import java.time.Instant;
  *
  * <p>Provides organizational boundaries for cost center accounting, contract rates, and trip routing.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "business_unit", uniqueConstraints = {

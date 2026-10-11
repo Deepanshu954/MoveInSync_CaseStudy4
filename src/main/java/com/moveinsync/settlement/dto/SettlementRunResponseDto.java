@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Top-level response DTO representing a complete settlement run summary and driver payslips.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Getter
 @Setter

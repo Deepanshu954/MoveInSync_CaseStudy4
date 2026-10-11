@@ -20,7 +20,7 @@ import java.util.Map;
  *   <li><b>Precision:</b> Standardized to 2 decimal places using {@link RoundingMode#HALF_UP}.</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 
 @Getter

@@ -11,7 +11,7 @@ import java.time.Instant;
  *
  * <p>Maintains driving license credentials, verified PAN for TDS rate determination, and active status.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "driver", uniqueConstraints = {

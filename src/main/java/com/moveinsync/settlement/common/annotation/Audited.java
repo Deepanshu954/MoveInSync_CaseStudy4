@@ -8,7 +8,7 @@ import java.lang.annotation.*;
  * <p>Persists immutable records into {@code audit_event} table including the authenticated actor,
  * action, target entity type, entity ID, and correlation token.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

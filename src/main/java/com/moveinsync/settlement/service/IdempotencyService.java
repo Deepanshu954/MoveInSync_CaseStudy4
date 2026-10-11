@@ -17,12 +17,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 /**
- * Service managing Tier-1 HTTP Request Idempotency (FR-09).
+ * Service managing request idempotency.
+ * Hashes incoming request payloads to detect duplicate or concurrent requests,
+ * and caches completed responses for 24 hours.
  *
- * <p>Prevents duplicate execution by hashing incoming request payloads, detecting concurrent
- * execution requests with the same key, and caching completed responses for 24 hours.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

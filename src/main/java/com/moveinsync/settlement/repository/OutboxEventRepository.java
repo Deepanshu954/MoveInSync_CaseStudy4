@@ -14,7 +14,7 @@ import java.util.List;
  * <p>Includes PostgreSQL {@code SKIP LOCKED} concurrency controls to safely coordinate
  * horizontally scaled Kubernetes worker pods without duplicate processing or thread deadlocks.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> {

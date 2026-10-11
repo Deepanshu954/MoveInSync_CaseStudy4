@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  *
  * <p>Loads user accounts by username, resolves active status, and wraps them in {@link CustomUserDetails}.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {

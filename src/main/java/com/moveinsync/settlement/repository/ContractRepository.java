@@ -11,7 +11,7 @@ import java.util.List;
  * <p>In MoveInSync's commute operations, a {@link com.moveinsync.settlement.entity.Contract}
  * represents the master commercial agreement between MoveInSync/Client Enterprises and a transporter (Vendor).
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, Long> {

@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  *   <li>Returns an {@link AuthResponseDto} containing the token, TTL expiry, username, and role set.</li>
  * </ol>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 public class AuthService {

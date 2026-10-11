@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * Repository for Indian Income Tax Section 194C TDS rate configurations.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface TaxConfigRepository extends JpaRepository<TaxConfig, Long> {

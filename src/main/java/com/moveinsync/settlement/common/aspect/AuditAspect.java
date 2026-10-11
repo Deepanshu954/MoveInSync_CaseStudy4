@@ -22,7 +22,7 @@ import java.util.UUID;
  * <p>Automatically extracts the active caller, target entity ID, and persists an immutable
  * audit record in the database without modifying core business service methods.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Aspect
 @Component

@@ -60,19 +60,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Core orchestration engine for MoveInSync vendor and driver settlements.
+ * Main settlement service handling billing period calculations for vendors and drivers.
+ * Supports both preview mode (in-memory dry run) and database persistence.
  *
- * <p>Key architectural guarantees:
- * <ul>
- *   <li><b>Tier-2 Domain Scope Protection:</b> Re-calculating an already-settled billing period
- *       safely returns the existing run without duplicate ledger records.</li>
- *   <li><b>Preview Mode:</b> Evaluates complete ledger calculations in-memory without database writes.</li>
- *   <li><b>Batch Persistence & N+1 Elimination:</b> Trips are bulk fetched with JOIN FETCH,
- *       and generated payslips and lines are saved using {@code saveAll()} batch operations.</li>
- *   <li><b>Zero Mathematical Drift:</b> Net pay, payslips, and run totals reconcile with 0.00 paise drift.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j
@@ -126,7 +117,7 @@ public class SettlementService {
                     .orElseThrow(() -> new ResourceNotFoundException("BusinessUnit not found with id: " + request.getBusinessUnitId()));
         }
 
-        // TIER-2 DOMAIN SCOPE PROTECTION: Check for existing original run
+        // Check if a run already exists for this vendor and billing period
         if (!request.isPreviewOnly()) {
             Optional<SettlementRun> existingRunOpt = settlementRunRepository.findExistingOriginalRun(
                     request.getVendorId(),
@@ -137,7 +128,7 @@ public class SettlementService {
 
             if (existingRunOpt.isPresent()) {
                 SettlementRun existing = existingRunOpt.get();
-                log.info("Found existing SettlementRun {} for scope. Returning existing run (Tier-2 Idempotency).", existing.getId());
+                log.info("Found existing SettlementRun {} for vendor {} in period {} to {}. Returning existing run.", existing.getId(), request.getVendorId(), request.getPeriodStart(), request.getPeriodEnd());
                 return getSettlementRun(existing.getId());
             }
         }

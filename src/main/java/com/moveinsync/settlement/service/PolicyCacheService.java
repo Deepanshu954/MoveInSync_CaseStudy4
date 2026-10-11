@@ -25,7 +25,7 @@ import java.util.Optional;
  * <p>Avoids repeated database roundtrips during high-volume batch runs by caching
  * immutable policy slices in-memory with explicit cache eviction capabilities.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

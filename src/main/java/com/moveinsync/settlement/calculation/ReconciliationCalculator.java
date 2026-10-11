@@ -9,13 +9,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Pure calculation engine for three-way vendor invoice reconciliation.
+ * Compares vendor invoiced amounts against calculated settlement totals
+ * and determines if variances fall within configured tolerance limits.
  *
- * <p>Enforces Single Responsibility Principle (SRP):
- * Evaluates variance between billed amounts and calculated settlement ledgers
- * against configurable absolute or percentage tolerances.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 public class ReconciliationCalculator {

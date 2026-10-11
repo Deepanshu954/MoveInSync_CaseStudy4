@@ -29,7 +29,7 @@ import java.util.Map;
  * <p>Guarantees that client applications receive predictable, structured JSON error payloads
  * across all validation, domain, security, and runtime error conditions with correlation trace IDs.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @RestControllerAdvice
 @Slf4j

@@ -9,7 +9,7 @@ import java.time.Instant;
  *
  * <p>Stores legal business profile, GSTIN registration, PAN number, and banking details.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "vendor")

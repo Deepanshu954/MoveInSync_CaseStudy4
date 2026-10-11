@@ -31,12 +31,11 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Enterprise service managing vendor invoice submissions and three-way reconciliation matching.
+ * Service managing vendor invoice submissions and reconciliation.
+ * Compares vendor-submitted invoice amounts against calculated settlement runs
+ * and records reconciliation status based on variance thresholds.
  *
- * <p>Validates month-end vendor invoice claims against engine-calculated disbursement ledgers.
- * If variance falls within tolerance, the invoice automatically transitions to {@code MATCHED}.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

@@ -15,6 +15,12 @@
 	<name>settlement-engine</name>
 	<description>MoveInSync Vendor and Driver Settlement Engine (Case Study 4)</description>
 
+	<developers>
+		<developer>
+			<name>Deepanshu</name>
+		</developer>
+	</developers>
+
 	<properties>
 		<java21.home>/opt/homebrew/opt/openjdk@21</java21.home>
 		<testcontainers.version>1.20.4</testcontainers.version>

@@ -12,7 +12,7 @@ import java.time.Instant;
  * <p>Guarantees that database updates (settlement completion, payout trigger) and message broker
  * events (Kafka/RabbitMQ topics) remain strictly synchronized without distributed 2PC locks.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "outbox_event")

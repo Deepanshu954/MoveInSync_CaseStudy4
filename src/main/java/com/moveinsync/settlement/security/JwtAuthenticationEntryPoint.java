@@ -23,7 +23,7 @@ import java.util.Map;
  *
  * <p>Returns HTTP 401 Unauthorized with a structured RFC 7807 JSON error body.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

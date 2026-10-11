@@ -28,9 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * End-to-end integration tests for the Settlement REST API controller.
  *
  * <p>Validates HTTP endpoints, RBAC permissions, request validation,
- * Tier-1 idempotency headers, payload tamper detection, and approval transitions.
+ * idempotency headers, request verification, and approval transitions.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -82,7 +82,7 @@ public class SettlementControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/settlements/calculate - Tier-1 Idempotency replaying exact key returns cached response")
+    @DisplayName("POST /api/settlements/calculate - Idempotency key replay returns cached response")
     void shouldHandleTier1IdempotencyReplay() throws Exception {
         String idemKey = "REST-KEY-" + UUID.randomUUID();
         SettlementCalculateRequestDto request = new SettlementCalculateRequestDto(
@@ -114,7 +114,7 @@ public class SettlementControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/settlements/calculate - Tier-1 Idempotency tampering triggers 409 Conflict")
+    @DisplayName("POST /api/settlements/calculate - Replaying idempotency key with modified payload triggers 409 Conflict")
     void shouldTrigger409ConflictOnIdempotencyTampering() throws Exception {
         String idemKey = "TAMPER-KEY-" + UUID.randomUUID();
         SettlementCalculateRequestDto original = new SettlementCalculateRequestDto(

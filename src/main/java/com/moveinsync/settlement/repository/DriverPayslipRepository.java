@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * <p>Contains gross earnings, volume incentives, safety deductions, and net payouts.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface DriverPayslipRepository extends JpaRepository<DriverPayslip, Long> {

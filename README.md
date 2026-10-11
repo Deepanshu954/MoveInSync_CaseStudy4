@@ -1,6 +1,8 @@
 # MoveInSync Vendor & Driver Settlement Engine
 > Case Study 4: Corporate transport month-end financial settlement, invoice reconciliation, and dispute delta engine.
 
+**Author:** Deepanshu
+
 ---
 
 ## Tech Stack

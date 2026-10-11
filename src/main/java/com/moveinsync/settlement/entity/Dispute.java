@@ -14,7 +14,7 @@ import java.time.Instant;
  *   OPEN -> UNDER_REVIEW -> APPROVED (or REJECTED)
  * </pre>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "dispute")

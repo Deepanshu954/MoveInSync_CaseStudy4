@@ -10,12 +10,10 @@ import java.math.RoundingMode;
 import java.util.List;
 
 /**
- * Validates financial invariants before payout disbursement.
+ * Validates financial totals before payout disbursement.
+ * Checks that the sum of individual driver payslips equals the settlement run net amount.
  *
- * <p>Enforces zero mathematical drift: the net pay across all individual driver payslips
- * must sum exactly to the aggregate net total calculated for the settlement run.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 public class FinancialInvariantValidator {
@@ -25,7 +23,7 @@ public class FinancialInvariantValidator {
      *
      * @param run the settlement run being finalized
      * @param payslips list of driver payslips generated for this run
-     * @throws PolicyViolationException if there is even 1 paise of mathematical drift
+     * @throws PolicyViolationException if amounts do not match exactly
      */
     public void validateZeroDrift(SettlementRun run, List<DriverPayslip> payslips) {
         BigDecimal sumOfPayslips = payslips.stream()

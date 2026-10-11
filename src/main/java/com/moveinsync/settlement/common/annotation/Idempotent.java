@@ -13,7 +13,7 @@ import java.lang.annotation.*;
  *   <li>Rejects concurrent in-flight executions with HTTP 409 Conflict.</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

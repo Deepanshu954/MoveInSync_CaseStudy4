@@ -17,21 +17,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Enterprise Spring Security Configuration for MoveInSync Settlement Engine.
+ * Security configuration for JWT-based stateless authentication and role-based access control.
  *
- * <p>Architectural Principles:
- * <ul>
- *   <li><b>Stateless Architecture:</b> HTTP sessions are strictly disabled ({@code STATELESS})
- *       to support zero-downtime horizontal pod autoscaling in Kubernetes.</li>
- *   <li><b>HMAC-SHA256 JWT Authentication:</b> Every incoming request must present a cryptographically
- *       signed Bearer token in the {@code Authorization} header, verified per-request.</li>
- *   <li><b>Defense-in-Depth RBAC:</b> Global route rules protect the perimeter while fine-grained
- *       method security ({@code @PreAuthorize}) guards service and controller mutation methods.</li>
- *   <li><b>RFC 7807 Error Responses:</b> Authentication failures (401) and authorization rejections (403)
- *       emit machine-readable JSON payloads rather than default HTML error pages.</li>
- * </ul>
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Configuration
 @EnableWebSecurity

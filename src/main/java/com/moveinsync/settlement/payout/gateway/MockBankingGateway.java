@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *   <li>Emits standard Indian banking UTR format: UTR-YYYYMMDD-HEX</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Service
 @Slf4j

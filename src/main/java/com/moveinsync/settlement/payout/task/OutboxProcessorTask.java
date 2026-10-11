@@ -18,7 +18,7 @@ import java.util.List;
  * <p>Uses PostgreSQL {@code SKIP LOCKED} to prevent multi-instance race conditions and
  * coordinates with {@link OutboxEventDispatcher} for per-event transaction isolation.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Repository for tracking API mutation idempotency tokens.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface IdempotencyRecordRepository extends JpaRepository<IdempotencyRecord, Long> {

@@ -22,7 +22,7 @@ import java.util.Map;
  *   <li>{@code ADJUSTMENT}: Dispute resolution delta credit or debit</li>
  * </ul>
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Entity
 @Table(name = "settlement_line", uniqueConstraints = {

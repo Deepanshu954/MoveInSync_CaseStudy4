@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Repository for fleet vendor (transporter) organizations.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface VendorRepository extends JpaRepository<Vendor, Long> {

@@ -12,7 +12,7 @@ import java.util.List;
  *
  * <p>Supports time-sliced pricing amendments where rate changes occur mid-month (e.g. Oct 15th).
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface ContractRateRepository extends JpaRepository<ContractRate, Long> {

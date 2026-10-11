@@ -100,7 +100,7 @@ class SettlementOrchestrationIntegrationTest {
             assertThat(p.getNetPay()).isEqualByComparingTo(sumLines);
         }
 
-        // Tier-2 Domain Scope Protection: Running again for same scope returns existing run
+        // Running again for the same vendor and billing period returns existing run
         SettlementRunResponseDto duplicateRun = settlementService.calculateOrPreviewSettlement(request, "NEW-KEY", "TEST_ADMIN");
         assertThat(duplicateRun.getId()).isEqualTo(run.getId());
         assertThat(duplicateRun.getTotalNet()).isEqualByComparingTo(run.getTotalNet());

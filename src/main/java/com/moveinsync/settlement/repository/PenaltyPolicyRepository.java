@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Repository for SLA breach and safety penalty deduction rules.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface PenaltyPolicyRepository extends JpaRepository<PenaltyPolicy, Long> {

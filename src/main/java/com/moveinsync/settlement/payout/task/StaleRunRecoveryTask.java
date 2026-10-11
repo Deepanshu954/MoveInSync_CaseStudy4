@@ -23,7 +23,7 @@ import java.util.List;
  * container crash, or node failure, and transitions them to {@code FAILED} to unblock
  * subsequent billing runs under the partial unique index.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Component
 @Slf4j

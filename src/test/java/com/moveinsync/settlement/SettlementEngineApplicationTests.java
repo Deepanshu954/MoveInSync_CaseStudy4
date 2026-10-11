@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
  * Bootstrap smoke test validating that the Spring Boot ApplicationContext,
  * Flyway database migrations, and JPA entity mappings initialize without errors.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @SpringBootTest
 @ActiveProfiles("test")

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Repository for three-way financial reconciliation audit logs.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface ReconciliationRecordRepository extends JpaRepository<ReconciliationRecord, Long> {

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Repository for driver and vendor performance incentive rules.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface IncentivePolicyRepository extends JpaRepository<IncentivePolicy, Long> {

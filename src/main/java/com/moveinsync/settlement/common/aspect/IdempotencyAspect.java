@@ -20,14 +20,10 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 /**
- * Declarative AOP Aspect intercepting methods annotated with
- * {@link Idempotent}.
+ * Intercepts controller endpoints annotated with {@link Idempotent}
+ * to prevent duplicate executions using idempotency keys and payload hashes.
  *
- * <p>
- * Handles Tier-1 HTTP Request Idempotency transparently before the controller
- * method executes.
- *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Aspect
 @Component

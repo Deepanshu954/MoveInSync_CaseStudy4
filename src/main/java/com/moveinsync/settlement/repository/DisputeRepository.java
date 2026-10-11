@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Repository for managing vendor and driver billing dispute tickets.
  *
- * @author MoveInSync Core Settlement Team
+ * @author Deepanshu
  */
 @Repository
 public interface DisputeRepository extends JpaRepository<Dispute, Long> {
