@@ -1,4 +1,4 @@
-package com.moveinsync.settlement.payout.calculator;
+package com.moveinsync.settlement.calculation;
 
 import com.moveinsync.settlement.common.exception.PolicyViolationException;
 import com.moveinsync.settlement.entity.Driver;

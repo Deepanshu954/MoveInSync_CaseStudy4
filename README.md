@@ -38,18 +38,6 @@ docker compose up -d
 
 ---
 
-## Default Credentials
-
-| Username | Password | Role |
-|---|---|---|
-| `admin` | `password123` | `ROLE_SETTLEMENT_ADMIN` |
-| `approver` | `password123` | `ROLE_APPROVER` |
-| `vendor_mgr` | `password123` | `ROLE_VENDOR_ADMIN` |
-| `driver_raj` | `password123` | `ROLE_DRIVER` |
-| `driver_priya` | `password123` | `ROLE_DRIVER` |
-
----
-
 ## API Documentation & Verification
 
 - **Swagger UI:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)

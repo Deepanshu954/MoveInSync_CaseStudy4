@@ -1,4 +1,4 @@
-package com.moveinsync.settlement.dispute.calculator;
+package com.moveinsync.settlement.calculation;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package com.moveinsync.settlement.dispute.calculator;
+package com.moveinsync.settlement.calculation;
 
 import lombok.Builder;
 import lombok.Getter;

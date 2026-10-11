@@ -1,4 +1,4 @@
-package com.moveinsync.settlement.reconciliation.calculator;
+package com.moveinsync.settlement.calculation;
 
 import com.moveinsync.settlement.entity.ReconciliationRecord;
 import org.junit.jupiter.api.BeforeEach;

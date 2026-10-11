@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moveinsync.settlement.common.annotation.Audited;
 import com.moveinsync.settlement.common.annotation.ExecutionTime;
 import com.moveinsync.settlement.common.exception.ResourceNotFoundException;
-import com.moveinsync.settlement.dispute.calculator.DisputeDeltaCalculator;
+import com.moveinsync.settlement.calculation.DisputeDeltaCalculator;
 import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import com.moveinsync.settlement.dto.*;
 import com.moveinsync.settlement.entity.*;
