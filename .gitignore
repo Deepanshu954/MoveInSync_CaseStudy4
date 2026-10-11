@@ -1,0 +1,36 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### Confidential & Planning Docs ###
+plan/
+*.pdf
+
+### Secrets & Environment ###
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+
+### IDEs ###
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+
+### OS artifacts ###
+.DS_Store
+Thumbs.db
+
+### Logs & Temp ###
+*.log
+logs/
+tmp/
+scratch/
