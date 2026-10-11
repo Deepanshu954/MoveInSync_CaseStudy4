@@ -66,6 +66,9 @@ public class ReconciliationService {
                         bu = businessUnitRepository.findById(dto.getBusinessUnitId())
                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                         "BusinessUnit not found with id: " + dto.getBusinessUnitId()));
+                } else {
+                        List<BusinessUnit> bus = businessUnitRepository.findByVendorId(dto.getVendorId());
+                        bu = !bus.isEmpty() ? bus.get(0) : businessUnitRepository.findAll().stream().findFirst().orElse(null);
                 }
 
                 VendorInvoice invoice = VendorInvoice.builder()

@@ -3,32 +3,37 @@ package com.moveinsync.settlement.common.exception;
 import com.moveinsync.settlement.common.exception.dto.ExceptionResponseDto;
 import com.moveinsync.settlement.common.exception.dto.ValidationExceptionResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Centralized REST exception handler providing RFC 7807 compliant Problem
- * Details responses.
- * Guarantees that client applications receive predictable, structured JSON
- * error payloads
- * across all validation, domain, security, and runtime error conditions.
+ * Centralized REST exception handler providing RFC 7807 compliant Problem Details responses.
+ *
+ * <p>Guarantees that client applications receive predictable, structured JSON error payloads
+ * across all validation, domain, security, and runtime error conditions with correlation trace IDs.
+ *
+ * @author MoveInSync Core Settlement Team
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ExceptionResponseDto> handleNotFound(
@@ -54,6 +59,14 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionResponseDto> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            HttpServletRequest req) {
+        log.warn("Database unique constraint collision: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, "Database constraint violation or concurrent duplicate request", req.getRequestURI());
+    }
+
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<ExceptionResponseDto> handleInvalidState(
             InvalidStateTransitionException ex,
@@ -68,6 +81,14 @@ public class GlobalExceptionHandler {
             HttpServletRequest req) {
         log.warn("Business policy violation: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponseDto> handleIllegalArgument(
+            IllegalArgumentException ex,
+            HttpServletRequest req) {
+        log.warn("Illegal argument on {}: {}", req.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI());
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -87,10 +108,6 @@ public class GlobalExceptionHandler {
                 req.getRequestURI());
     }
 
-    /**
-     * Handles Spring Bean Validation errors ({@code @Valid}), returning
-     * field-by-field error mappings.
-     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationExceptionResponseDto> handleValidation(
             MethodArgumentNotValidException ex,
@@ -108,41 +125,38 @@ public class GlobalExceptionHandler {
                 "Validation failed for one or more fields",
                 req.getRequestURI(),
                 fieldErrors);
+        dto.setTraceId(MDC.get("traceId"));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(dto);
     }
 
-    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ExceptionResponseDto> handleTypeMismatch(
-            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex,
-            HttpServletRequest req
-    ) {
+            MethodArgumentTypeMismatchException ex,
+            HttpServletRequest req) {
         log.warn("Method argument type mismatch on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid parameter type: " + ex.getName(), req.getRequestURI());
     }
 
-    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ExceptionResponseDto> handleNotReadable(
-            org.springframework.http.converter.HttpMessageNotReadableException ex,
-            HttpServletRequest req
-    ) {
+            HttpMessageNotReadableException ex,
+            HttpServletRequest req) {
         log.warn("Malformed JSON payload on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Malformed JSON request payload", req.getRequestURI());
     }
 
-    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ExceptionResponseDto> handleMethodNotSupported(
-            org.springframework.web.HttpRequestMethodNotSupportedException ex,
-            HttpServletRequest req
-    ) {
+            HttpRequestMethodNotSupportedException ex,
+            HttpServletRequest req) {
         log.warn("Method not supported on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ExceptionResponseDto> handleNoResourceFound(
-            org.springframework.web.servlet.resource.NoResourceFoundException ex,
-            HttpServletRequest req
-    ) {
+            NoResourceFoundException ex,
+            HttpServletRequest req) {
         log.warn("Resource/endpoint not found on {}: {}", req.getRequestURI(), ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, "Endpoint not found: " + req.getRequestURI(), req.getRequestURI());
     }
@@ -160,12 +174,14 @@ public class GlobalExceptionHandler {
             HttpStatus status,
             String message,
             String uri) {
-        ExceptionResponseDto dto = new ExceptionResponseDto(
-                LocalDateTime.now(),
-                status.value(),
-                status.getReasonPhrase(),
-                message,
-                uri);
+        ExceptionResponseDto dto = ExceptionResponseDto.builder()
+                .timestamp(LocalDateTime.now())
+                .status(status.value())
+                .error(status.getReasonPhrase())
+                .message(message)
+                .path(uri)
+                .traceId(MDC.get("traceId"))
+                .build();
         return ResponseEntity.status(status).body(dto);
     }
 }
