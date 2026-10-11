@@ -11,6 +11,7 @@ import com.moveinsync.settlement.calculation.IncentiveCalculator;
 import com.moveinsync.settlement.calculation.PenaltyCalculator;
 import com.moveinsync.settlement.calculation.TaxCalculator;
 import com.moveinsync.settlement.payout.validator.FinancialInvariantValidator;
+import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import com.moveinsync.settlement.common.exception.InvalidStateTransitionException;
 import com.moveinsync.settlement.common.exception.ResourceNotFoundException;
 import com.moveinsync.settlement.dto.DriverPayslipResponseDto;
@@ -76,6 +77,7 @@ public class SettlementService {
     private final OutboxEventRepository outboxEventRepository;
     private final PayoutService payoutService;
     private final FinancialInvariantValidator financialInvariantValidator;
+    private final SettlementMetrics settlementMetrics;
 
 
 
@@ -246,6 +248,7 @@ public class SettlementService {
 
         // 5. If Preview Mode, return directly without database persistence
         if (request.isPreviewOnly()) {
+            settlementMetrics.incrementRunsPreviewed();
             log.info("Returning preview settlement calculation for vendor {}: netAmount={}",
                     vendor.getId(), runTotalNet);
             return new SettlementRunResponseDto(
@@ -333,6 +336,9 @@ public class SettlementService {
 
         driverPayslipRepository.saveAll(payslipsToSave);
         settlementLineRepository.saveAll(linesToSave);
+        settlementMetrics.incrementRunsCalculated();
+        settlementMetrics.incrementTripsProcessed(runTotalTrips);
+        settlementMetrics.incrementDriversProcessed(runTotalDrivers);
 
         log.info("Persisted SettlementRun {}: {} payslips, {} lines, netAmount={}",
                 savedRun.getId(), payslipsToSave.size(), linesToSave.size(), savedRun.getTotalNet());
@@ -411,6 +417,7 @@ public class SettlementService {
 
         run.approve(approvedBy);
         settlementRunRepository.save(run);
+        settlementMetrics.incrementPayoutsApproved();
 
         log.info("Approved SettlementRun {} by {}", runId, approvedBy);
         return getSettlementRun(runId);
@@ -458,6 +465,7 @@ public class SettlementService {
         // 2. Transition Run State via Domain Encapsulation
         run.finalizeRun(finalizedBy);
         SettlementRun savedRun = settlementRunRepository.save(run);
+        settlementMetrics.incrementPayoutsFinalized();
 
         // 3. Generate Payout Instructions for eligible drivers (Net Pay > 0)
         List<PayoutInstruction> payoutInstructions = new ArrayList<>();

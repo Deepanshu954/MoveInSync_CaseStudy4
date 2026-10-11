@@ -4,6 +4,7 @@ import com.moveinsync.settlement.common.annotation.ExecutionTime;
 import com.moveinsync.settlement.dto.OutboxProcessResultDto;
 import com.moveinsync.settlement.entity.OutboxEvent;
 import com.moveinsync.settlement.repository.OutboxEventRepository;
+import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,6 +27,7 @@ public class OutboxProcessorTask {
 
     private final OutboxEventRepository outboxEventRepository;
     private final OutboxEventDispatcher outboxEventDispatcher;
+    private final SettlementMetrics settlementMetrics;
 
     @Scheduled(fixedDelayString = "${settlement.outbox.poll-interval-ms:5000}")
     public void scheduledProcess() {
@@ -63,6 +65,8 @@ public class OutboxProcessorTask {
             }
         }
 
+        if (processed > 0) settlementMetrics.incrementOutboxDispatched(processed);
+        if (failed > 0) settlementMetrics.incrementOutboxDlq(failed);
         long remaining = outboxEventRepository.countByStatus(OutboxEvent.OutboxStatus.PENDING);
         log.info("Outbox batch completed: evaluated={}, processed={}, failed={}, remainingPending={}",
                 pendingEvents.size(), processed, failed, remaining);

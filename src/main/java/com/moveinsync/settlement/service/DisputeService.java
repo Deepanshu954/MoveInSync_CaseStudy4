@@ -5,6 +5,7 @@ import com.moveinsync.settlement.common.annotation.Audited;
 import com.moveinsync.settlement.common.annotation.ExecutionTime;
 import com.moveinsync.settlement.common.exception.ResourceNotFoundException;
 import com.moveinsync.settlement.dispute.calculator.DisputeDeltaCalculator;
+import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import com.moveinsync.settlement.dto.*;
 import com.moveinsync.settlement.entity.*;
 import com.moveinsync.settlement.repository.*;
@@ -43,6 +44,7 @@ public class DisputeService {
     private final DisputeRepository disputeRepository;
     private final SettlementAdjustmentRepository settlementAdjustmentRepository;
     private final SettlementLineRepository settlementLineRepository;
+    private final SettlementMetrics settlementMetrics;
     private final SettlementRunRepository settlementRunRepository;
     private final TripRepository tripRepository;
     private final PayoutInstructionRepository payoutInstructionRepository;
@@ -79,6 +81,7 @@ public class DisputeService {
                 .build();
 
         Dispute savedDispute = disputeRepository.save(dispute);
+        settlementMetrics.incrementDisputesRaised();
 
         // Encapsulated state transition: mark trip as disputed
         trip.markDisputed();
@@ -100,6 +103,7 @@ public class DisputeService {
         // Dispute Rejected Flow
         if (Boolean.FALSE.equals(dto.getApprove())) {
             dispute.reject(username, dto.getResolutionComments());
+            settlementMetrics.incrementDisputesRejected();
             disputeRepository.save(dispute);
 
             trip.restoreCompleted();
@@ -127,6 +131,7 @@ public class DisputeService {
                 disputeId, deltaResult.getOriginalAmount(), deltaResult.getRevisedAmount(), deltaResult.getDeltaAmount());
 
         // 1. Create Append-Only SettlementAdjustment (Historical lines remain 100% IMMUTABLE)
+        settlementMetrics.incrementDisputesResolved();
         SettlementAdjustment adjustment = SettlementAdjustment.builder()
                 .dispute(dispute)
                 .originalRun(dispute.getSettlementRun())

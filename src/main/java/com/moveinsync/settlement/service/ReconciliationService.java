@@ -10,6 +10,7 @@ import com.moveinsync.settlement.dto.VendorInvoiceResponseDto;
 import com.moveinsync.settlement.dto.VendorInvoiceSubmitRequestDto;
 import com.moveinsync.settlement.entity.*;
 import com.moveinsync.settlement.reconciliation.calculator.ReconciliationCalculator;
+import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import com.moveinsync.settlement.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,7 @@ public class ReconciliationService {
         private final SettlementRunRepository settlementRunRepository;
         private final VendorRepository vendorRepository;
         private final BusinessUnitRepository businessUnitRepository;
+        private final SettlementMetrics settlementMetrics;
         private final ReconciliationCalculator reconciliationCalculator;
 
         @Transactional
@@ -111,8 +113,10 @@ public class ReconciliationService {
                 // Update entity state via domain encapsulation
                 if (result.isMatched()) {
                         invoice.markMatched();
+                        settlementMetrics.incrementReconciliationsMatched();
                 } else {
                         invoice.markDiscrepancy();
+                        settlementMetrics.incrementReconciliationsDiscrepancy();
                 }
                 vendorInvoiceRepository.save(invoice);
 

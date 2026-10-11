@@ -5,6 +5,7 @@ import com.moveinsync.settlement.common.annotation.Idempotent;
 import com.moveinsync.settlement.dto.SettlementRunResponseDto;
 import com.moveinsync.settlement.entity.IdempotencyRecord;
 import com.moveinsync.settlement.service.IdempotencyService;
+import com.moveinsync.settlement.common.metrics.SettlementMetrics;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,7 @@ public class IdempotencyAspect {
 
     private final IdempotencyService idempotencyService;
     private final ObjectMapper objectMapper;
+    private final SettlementMetrics settlementMetrics;
 
     @Around("@annotation(idempotent)")
     public Object handleIdempotency(ProceedingJoinPoint joinPoint, Idempotent idempotent) throws Throwable {
@@ -78,6 +80,7 @@ public class IdempotencyAspect {
         // 1. Check or start in IdempotencyService
         Optional<IdempotencyRecord> cached = idempotencyService.checkOrStart(idempotencyKey, resourcePath, requestJson);
         if (cached.isPresent()) {
+            settlementMetrics.incrementIdempotentHit();
             IdempotencyRecord record = cached.get();
             log.info("IdempotencyAspect: Returning cached response for key {}", idempotencyKey);
             SettlementRunResponseDto cachedDto = objectMapper.readValue(record.getResponsePayload(),

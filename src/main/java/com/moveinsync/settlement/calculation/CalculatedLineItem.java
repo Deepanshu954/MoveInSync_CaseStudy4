@@ -22,6 +22,7 @@ import java.util.Map;
  *
  * @author MoveInSync Core Settlement Team
  */
+
 @Getter
 @Setter
 @NoArgsConstructor
