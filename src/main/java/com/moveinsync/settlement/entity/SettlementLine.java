@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
@@ -25,6 +26,11 @@ import java.util.Map;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class SettlementLine {
 
     @Id
@@ -66,6 +72,7 @@ public class SettlementLine {
     private Map<String, Object> calculationDetails;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public enum LineType {
@@ -73,118 +80,5 @@ public class SettlementLine {
         INCENTIVE,
         PENALTY,
         TDS
-    }
-
-    public SettlementLine() {}
-
-    public SettlementLine(Long id, SettlementRun run, Driver driver, LineType lineType, String sourceType, Long sourceId, String description, BigDecimal amount, Integer rateVersion, Integer policyVersion, Map<String, Object> calculationDetails, Instant createdAt) {
-        this.id = id;
-        this.run = run;
-        this.driver = driver;
-        this.lineType = lineType;
-        this.sourceType = sourceType;
-        this.sourceId = sourceId;
-        this.description = description;
-        this.amount = amount;
-        this.rateVersion = rateVersion;
-        this.policyVersion = policyVersion;
-        this.calculationDetails = calculationDetails;
-        this.createdAt = createdAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public SettlementRun getRun() {
-        return run;
-    }
-
-    public void setRun(SettlementRun run) {
-        this.run = run;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    public LineType getLineType() {
-        return lineType;
-    }
-
-    public void setLineType(LineType lineType) {
-        this.lineType = lineType;
-    }
-
-    public String getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
-    }
-
-    public Long getSourceId() {
-        return sourceId;
-    }
-
-    public void setSourceId(Long sourceId) {
-        this.sourceId = sourceId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public Integer getRateVersion() {
-        return rateVersion;
-    }
-
-    public void setRateVersion(Integer rateVersion) {
-        this.rateVersion = rateVersion;
-    }
-
-    public Integer getPolicyVersion() {
-        return policyVersion;
-    }
-
-    public void setPolicyVersion(Integer policyVersion) {
-        this.policyVersion = policyVersion;
-    }
-
-    public Map<String, Object> getCalculationDetails() {
-        return calculationDetails;
-    }
-
-    public void setCalculationDetails(Map<String, Object> calculationDetails) {
-        this.calculationDetails = calculationDetails;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }

@@ -4,8 +4,7 @@ import com.moveinsync.settlement.common.exception.PolicyViolationException;
 import com.moveinsync.settlement.entity.ContractRate;
 import com.moveinsync.settlement.entity.SettlementLine;
 import com.moveinsync.settlement.entity.Trip;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -39,10 +38,10 @@ import java.util.*;
  * @author MoveInSync Core Settlement Team
  */
 @Component
+@Slf4j
 public class BasePayCalculator {
 
-    private static final Logger log = LoggerFactory.getLogger(BasePayCalculator.class);
-
+    
     /**
      * Calculates base pay line items for a collection of commute trips against available contract rates.
      *

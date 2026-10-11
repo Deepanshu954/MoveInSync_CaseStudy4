@@ -3,8 +3,7 @@ package com.moveinsync.settlement.calculation;
 import com.moveinsync.settlement.entity.Driver;
 import com.moveinsync.settlement.entity.SettlementLine;
 import com.moveinsync.settlement.entity.TaxConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -37,10 +36,10 @@ import java.util.Optional;
  * @author MoveInSync Core Settlement Team
  */
 @Component
+@Slf4j
 public class TaxCalculator {
 
-    private static final Logger log = LoggerFactory.getLogger(TaxCalculator.class);
-    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
+        private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     /**
      * Calculates Section 194C TDS withholding line item for a driver's monthly taxable earnings.
@@ -69,8 +68,14 @@ public class TaxCalculator {
         }
 
         BigDecimal ratePercent = config.getRatePercent() != null ? config.getRatePercent() : BigDecimal.ZERO;
-        BigDecimal tdsAmount = excess.multiply(ratePercent)
-                .divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
+        BigDecimal tdsAmount;
+        if (ratePercent.compareTo(BigDecimal.ONE) >= 0) {
+            // Specified as whole percentage (e.g. 1.00 for 1%, 10.00 for 10%)
+            tdsAmount = excess.multiply(ratePercent).divide(ONE_HUNDRED, 2, RoundingMode.HALF_UP);
+        } else {
+            // Specified as ratio fraction (e.g. 0.1000 for 10%, 0.0100 for 1%)
+            tdsAmount = excess.multiply(ratePercent).setScale(2, RoundingMode.HALF_UP);
+        }
 
         if (tdsAmount.compareTo(BigDecimal.ZERO) <= 0) {
             return Optional.empty();

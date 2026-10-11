@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -14,6 +15,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PayoutInstruction {
 
     @Id
@@ -36,6 +42,7 @@ public class PayoutInstruction {
     private BigDecimal amount;
 
     @Column(nullable = false, length = 3)
+    @Builder.Default
     private String currency = "INR";
 
     @Column(name = "idempotency_key", nullable = false, unique = true, length = 200)
@@ -43,6 +50,7 @@ public class PayoutInstruction {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Builder.Default
     private PayoutStatus status = PayoutStatus.PENDING;
 
     @Column(name = "provider_reference", length = 200)
@@ -52,125 +60,14 @@ public class PayoutInstruction {
     private String failureReason;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
+    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     public enum PayoutStatus {
         PENDING, INITIATED, SUCCESS, FAILED, CANCELLED
-    }
-
-    public PayoutInstruction() {}
-
-    public PayoutInstruction(Long id, SettlementRun settlementRun, Driver driver, Vendor vendor, BigDecimal amount, String currency, String idempotencyKey, PayoutStatus status, String providerReference, String failureReason, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.settlementRun = settlementRun;
-        this.driver = driver;
-        this.vendor = vendor;
-        this.amount = amount;
-        this.currency = currency;
-        this.idempotencyKey = idempotencyKey;
-        this.status = status;
-        this.providerReference = providerReference;
-        this.failureReason = failureReason;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public SettlementRun getSettlementRun() {
-        return settlementRun;
-    }
-
-    public void setSettlementRun(SettlementRun settlementRun) {
-        this.settlementRun = settlementRun;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    public Vendor getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
-    }
-
-    public String getIdempotencyKey() {
-        return idempotencyKey;
-    }
-
-    public void setIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
-    }
-
-    public PayoutStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PayoutStatus status) {
-        this.status = status;
-    }
-
-    public String getProviderReference() {
-        return providerReference;
-    }
-
-    public void setProviderReference(String providerReference) {
-        this.providerReference = providerReference;
-    }
-
-    public String getFailureReason() {
-        return failureReason;
-    }
-
-    public void setFailureReason(String failureReason) {
-        this.failureReason = failureReason;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

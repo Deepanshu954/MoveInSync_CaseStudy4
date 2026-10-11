@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -23,6 +24,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ContractRate {
 
     @Id
@@ -47,9 +53,11 @@ public class ContractRate {
     private Instant effectiveTo; // NULL = open-ended
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer version = 1;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public enum ComponentType {
@@ -61,82 +69,5 @@ public class ContractRate {
         boolean afterOrAtStart = !timestamp.isBefore(effectiveFrom);
         boolean beforeEnd = (effectiveTo == null) || timestamp.isBefore(effectiveTo);
         return afterOrAtStart && beforeEnd;
-    }
-
-    public ContractRate() {}
-
-    public ContractRate(Long id, Contract contract, ComponentType componentType, BigDecimal amount, Instant effectiveFrom, Instant effectiveTo, Integer version, Instant createdAt) {
-        this.id = id;
-        this.contract = contract;
-        this.componentType = componentType;
-        this.amount = amount;
-        this.effectiveFrom = effectiveFrom;
-        this.effectiveTo = effectiveTo;
-        this.version = version;
-        this.createdAt = createdAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Contract getContract() {
-        return contract;
-    }
-
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
-
-    public ComponentType getComponentType() {
-        return componentType;
-    }
-
-    public void setComponentType(ComponentType componentType) {
-        this.componentType = componentType;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public Instant getEffectiveFrom() {
-        return effectiveFrom;
-    }
-
-    public void setEffectiveFrom(Instant effectiveFrom) {
-        this.effectiveFrom = effectiveFrom;
-    }
-
-    public Instant getEffectiveTo() {
-        return effectiveTo;
-    }
-
-    public void setEffectiveTo(Instant effectiveTo) {
-        this.effectiveTo = effectiveTo;
-    }
-
-    public Integer getVersion() {
-        return version;
-    }
-
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }

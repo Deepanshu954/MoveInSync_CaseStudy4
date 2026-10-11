@@ -4,8 +4,7 @@ import com.moveinsync.settlement.entity.Driver;
 import com.moveinsync.settlement.entity.IncentivePolicy;
 import com.moveinsync.settlement.entity.SettlementLine;
 import com.moveinsync.settlement.entity.Trip;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -35,10 +34,10 @@ import java.util.stream.Collectors;
  * @author MoveInSync Core Settlement Team
  */
 @Component
+@Slf4j
 public class IncentiveCalculator {
 
-    private static final Logger log = LoggerFactory.getLogger(IncentiveCalculator.class);
-    private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
+        private static final ZoneId IST_ZONE = ZoneId.of("Asia/Kolkata");
 
     /**
      * Calculates bonus incentive line items for all drivers active in the settlement window.

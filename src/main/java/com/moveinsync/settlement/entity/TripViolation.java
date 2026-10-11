@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.Instant;
 
 @Entity
@@ -21,6 +22,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TripViolation {
 
     @Id
@@ -43,90 +49,14 @@ public class TripViolation {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Builder.Default
     private ViolationStatus status = ViolationStatus.ACTIVE;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     public enum ViolationStatus {
         ACTIVE, DISMISSED
-    }
-
-    public TripViolation() {}
-
-        public TripViolation(Long id, Trip trip, PenaltyPolicy.ViolationType violationType, Instant eventAt, String sourceRef, ViolationStatus status, Instant createdAt) {
-        this.id = id;
-        this.trip = trip;
-        this.violationType = violationType;
-        this.eventAt = eventAt;
-        this.sourceRef = sourceRef;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    public TripViolation(Long id, Trip trip, Instant eventAt, String sourceRef, ViolationStatus status, Instant createdAt) {
-        this.id = id;
-        this.trip = trip;
-        this.eventAt = eventAt;
-        this.sourceRef = sourceRef;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
-    
-    public PenaltyPolicy.ViolationType getViolationType() {
-        return violationType;
-    }
-
-    public void setViolationType(PenaltyPolicy.ViolationType violationType) {
-        this.violationType = violationType;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Trip getTrip() {
-        return trip;
-    }
-
-    public void setTrip(Trip trip) {
-        this.trip = trip;
-    }
-
-    public Instant getEventAt() {
-        return eventAt;
-    }
-
-    public void setEventAt(Instant eventAt) {
-        this.eventAt = eventAt;
-    }
-
-    public String getSourceRef() {
-        return sourceRef;
-    }
-
-    public void setSourceRef(String sourceRef) {
-        this.sourceRef = sourceRef;
-    }
-
-    public ViolationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ViolationStatus status) {
-        this.status = status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
     }
 }

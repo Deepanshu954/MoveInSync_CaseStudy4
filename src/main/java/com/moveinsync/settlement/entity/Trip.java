@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.Instant;
 
 @Entity
@@ -21,6 +22,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Trip {
 
     @Id
@@ -54,16 +60,20 @@ public class Trip {
     private Instant completedAt;
 
     @Column(name = "is_on_time", nullable = false)
+    @Builder.Default
     private Boolean isOnTime = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Builder.Default
     private TripStatus status = TripStatus.COMPLETED;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
+    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     public enum DutyType {
@@ -72,118 +82,5 @@ public class Trip {
 
     public enum TripStatus {
         COMPLETED, CANCELLED, DISPUTED
-    }
-
-    public Trip() {}
-
-    public Trip(Long id, String externalRef, Driver driver, Vendor vendor, BusinessUnit businessUnit, Contract contract, DutyType dutyType, Instant completedAt, Boolean isOnTime, TripStatus status, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.externalRef = externalRef;
-        this.driver = driver;
-        this.vendor = vendor;
-        this.businessUnit = businessUnit;
-        this.contract = contract;
-        this.dutyType = dutyType;
-        this.completedAt = completedAt;
-        this.isOnTime = isOnTime;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getExternalRef() {
-        return externalRef;
-    }
-
-    public void setExternalRef(String externalRef) {
-        this.externalRef = externalRef;
-    }
-
-    public Driver getDriver() {
-        return driver;
-    }
-
-    public void setDriver(Driver driver) {
-        this.driver = driver;
-    }
-
-    public Vendor getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
-    }
-
-    public BusinessUnit getBusinessUnit() {
-        return businessUnit;
-    }
-
-    public void setBusinessUnit(BusinessUnit businessUnit) {
-        this.businessUnit = businessUnit;
-    }
-
-    public Contract getContract() {
-        return contract;
-    }
-
-    public void setContract(Contract contract) {
-        this.contract = contract;
-    }
-
-    public DutyType getDutyType() {
-        return dutyType;
-    }
-
-    public void setDutyType(DutyType dutyType) {
-        this.dutyType = dutyType;
-    }
-
-    public Instant getCompletedAt() {
-        return completedAt;
-    }
-
-    public void setCompletedAt(Instant completedAt) {
-        this.completedAt = completedAt;
-    }
-
-    public Boolean getIsOnTime() {
-        return isOnTime;
-    }
-
-    public void setIsOnTime(Boolean isOnTime) {
-        this.isOnTime = isOnTime;
-    }
-
-    public TripStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TripStatus status) {
-        this.status = status;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

@@ -1,6 +1,7 @@
 package com.moveinsync.settlement.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.Instant;
 
 @Entity
@@ -14,6 +15,11 @@ import java.time.Instant;
  *
  * @author MoveInSync Core Settlement Team
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Driver {
 
     @Id
@@ -36,6 +42,7 @@ public class Driver {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Builder.Default
     private DriverStatus status = DriverStatus.ACTIVE;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -43,98 +50,14 @@ public class Driver {
     private AppUser appUser;
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
     private Instant createdAt = Instant.now();
 
     @Column(name = "updated_at", nullable = false)
+    @Builder.Default
     private Instant updatedAt = Instant.now();
 
     public enum DriverStatus {
         ACTIVE, INACTIVE, SUSPENDED
-    }
-
-    public Driver() {}
-
-    public Driver(Long id, Vendor vendor, BusinessUnit businessUnit, String externalRef, String name, DriverStatus status, AppUser appUser, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.vendor = vendor;
-        this.businessUnit = businessUnit;
-        this.externalRef = externalRef;
-        this.name = name;
-        this.status = status;
-        this.appUser = appUser;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Vendor getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(Vendor vendor) {
-        this.vendor = vendor;
-    }
-
-    public BusinessUnit getBusinessUnit() {
-        return businessUnit;
-    }
-
-    public void setBusinessUnit(BusinessUnit businessUnit) {
-        this.businessUnit = businessUnit;
-    }
-
-    public String getExternalRef() {
-        return externalRef;
-    }
-
-    public void setExternalRef(String externalRef) {
-        this.externalRef = externalRef;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public DriverStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(DriverStatus status) {
-        this.status = status;
-    }
-
-    public AppUser getAppUser() {
-        return appUser;
-    }
-
-    public void setAppUser(AppUser appUser) {
-        this.appUser = appUser;
-    }
-
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Instant createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Instant getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Instant updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }
