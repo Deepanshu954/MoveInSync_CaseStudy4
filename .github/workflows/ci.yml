@@ -1,0 +1,55 @@
+name: CI Build & Verify
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Build & Verify Test Suite
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: settlement
+          POSTGRES_USER: settlement
+          POSTGRES_PASSWORD: settlement_dev
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U settlement -d settlement"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compile and Run Unit & Integration Tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/settlement
+          SPRING_DATASOURCE_USERNAME: settlement
+          SPRING_DATASOURCE_PASSWORD: settlement_dev
+        run: mvn clean test -B
+
+      - name: Build Executable JAR
+        run: mvn package -DskipTests -B
+
+      - name: Publish Surefire Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: target/surefire-reports/
