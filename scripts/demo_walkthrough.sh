@@ -5,7 +5,7 @@
 # ==============================================================================
 set -e
 
-BASE_URL="http://localhost:8081"
+BASE_URL="http://localhost:8080"
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
@@ -21,7 +21,7 @@ echo -e "${CYAN}================================================================
 echo -e "\n${BLUE}--> Checking Application Health & Distributed Tracing...${NC}"
 HEALTH_RESP=$(curl -s -i "${BASE_URL}/actuator/health")
 echo "$HEALTH_RESP" | grep -i "x-trace-id" || true
-echo -e "${GREEN}✓ Application is UP and healthy on port 8081${NC}"
+echo -e "${GREEN}✓ Application is UP and healthy on port 8080${NC}"
 
 # Step 1: Authentication
 echo -e "\n${BLUE}=== STEP 1: Authenticate as Settlement Admin ===${NC}"

@@ -20,7 +20,7 @@ USER settlement:settlement
 
 COPY --from=builder /workspace/target/settlement-engine-1.0.0.jar app.jar
 
-EXPOSE 8081
+EXPOSE 8080
 
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
 

@@ -29,9 +29,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/settlement
       SPRING_DATASOURCE_USERNAME: settlement
       SPRING_DATASOURCE_PASSWORD: settlement_dev
-      SERVER_PORT: 8081
+      SERVER_PORT: 8080
     ports:
-      - "8081:8081"
+      - "8080:8080"
     restart: unless-stopped
 
 volumes:

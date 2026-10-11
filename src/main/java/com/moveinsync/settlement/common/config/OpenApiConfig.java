@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
                 license = @License(name = "MoveInSync Proprietary", url = "https://www.moveinsync.com")
         ),
         servers = {
-                @Server(url = "http://localhost:8081", description = "Local Settlement Engine Instance")
+                @Server(url = "http://localhost:8080", description = "Local Settlement Engine Instance")
         },
         security = {
                 @SecurityRequirement(name = "bearerAuth")

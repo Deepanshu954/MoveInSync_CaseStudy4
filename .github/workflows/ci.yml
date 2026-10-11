@@ -15,7 +15,7 @@ jobs:
       postgres:
         image: postgres:16-alpine
         env:
-          POSTGRES_DB: settlement
+          POSTGRES_DB: settlement_test
           POSTGRES_USER: settlement
           POSTGRES_PASSWORD: settlement_dev
         ports:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Compile and Run Unit & Integration Tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/settlement
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/settlement_test
           SPRING_DATASOURCE_USERNAME: settlement
           SPRING_DATASOURCE_PASSWORD: settlement_dev
         run: mvn clean test -B

@@ -31,7 +31,7 @@ mvn clean test
 ```bash
 mvn spring-boot:run
 ```
-The application starts on port `8081`.
+The application starts on port `8080`.
 
 ### Run with Docker Compose
 ```bash
@@ -42,8 +42,8 @@ docker compose up -d
 
 ## API Documentation & Verification
 
-- **Swagger UI:** [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
-- **OpenAPI Spec:** [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
+- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **OpenAPI Spec:** [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 - **Automated Demo Script:**
   ```bash
   ./scripts/demo_walkthrough.sh
