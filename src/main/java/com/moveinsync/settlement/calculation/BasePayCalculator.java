@@ -82,6 +82,7 @@ public class BasePayCalculator {
         return lineItems;
     }
 
+    @SuppressWarnings("null")
     private ContractRate findMatchingRate(Trip trip, List<ContractRate> availableRates) {
         ContractRate.ComponentType expectedComponent = (trip.getDutyType() == Trip.DutyType.TRIP)
                 ? ContractRate.ComponentType.PER_TRIP
@@ -95,8 +96,8 @@ public class BasePayCalculator {
                 .filter(r -> r.getComponentType() == expectedComponent)
                 .filter(r -> !completedAt.isBefore(r.getEffectiveFrom())) // completedAt >= effectiveFrom
                 .filter(r -> r.getEffectiveTo() == null || completedAt.isBefore(r.getEffectiveTo())) // completedAt < effectiveTo
-                .max(Comparator.comparing(ContractRate::getEffectiveFrom)
-                        .thenComparing(ContractRate::getVersion))
+                .max(Comparator.comparing((ContractRate r) -> r.getEffectiveFrom())
+                        .thenComparing(r -> r.getVersion()))
                 .orElse(null);
     }
 }

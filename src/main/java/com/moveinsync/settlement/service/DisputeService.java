@@ -64,6 +64,7 @@ public class DisputeService {
     @Transactional
     @Audited(entityType = "DISPUTE", action = "RAISE")
     @ExecutionTime
+    @SuppressWarnings("null")
     public DisputeResponseDto raiseDispute(DisputeCreateRequestDto dto, String username) {
         Trip trip = tripRepository.findById(dto.getTripId())
                 .orElseThrow(() -> new ResourceNotFoundException("Trip not found with id: " + dto.getTripId()));
@@ -74,7 +75,7 @@ public class DisputeService {
                     .orElseThrow(() -> new ResourceNotFoundException("SettlementRun not found with id: " + dto.getSettlementRunId()));
         } else {
             run = settlementLineRepository.findFirstBySourceTypeAndSourceId("TRIP", trip.getId())
-                    .map(SettlementLine::getRun)
+                    .map(line -> line.getRun())
                     .orElse(null);
         }
 
@@ -103,6 +104,7 @@ public class DisputeService {
     @Transactional
     @Audited(entityType = "DISPUTE", action = "RESOLVE")
     @ExecutionTime
+    @SuppressWarnings("null")
     public DisputeResolveResponseDto resolveDispute(Long disputeId, DisputeResolveRequestDto dto, String username) {
         Dispute dispute = disputeRepository.findById(disputeId)
                 .orElseThrow(() -> new ResourceNotFoundException("Dispute not found with id: " + disputeId));
@@ -128,7 +130,7 @@ public class DisputeService {
 
         // Dispute Approved Flow - Pure SRP Delta Calculation
         BigDecimal originalAmount = settlementLineRepository.findFirstBySourceTypeAndSourceId("TRIP", trip.getId())
-                .map(SettlementLine::getAmount)
+                .map(line -> line.getAmount())
                 .orElse(BigDecimal.ZERO)
                 .setScale(2, RoundingMode.HALF_UP);
 

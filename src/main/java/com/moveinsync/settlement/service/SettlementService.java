@@ -18,10 +18,8 @@ import com.moveinsync.settlement.dto.DriverPayslipResponseDto;
 import com.moveinsync.settlement.dto.SettlementCalculateRequestDto;
 import com.moveinsync.settlement.dto.SettlementLineResponseDto;
 import com.moveinsync.settlement.dto.SettlementRunResponseDto;
-import com.moveinsync.settlement.common.exception.PolicyViolationException;
 import com.moveinsync.settlement.dto.PayoutFinalizeResponseDto;
 import com.moveinsync.settlement.dto.PayoutInstructionResponseDto;
-import com.moveinsync.settlement.service.PayoutService;
 
 import com.moveinsync.settlement.entity.BusinessUnit;
 import com.moveinsync.settlement.entity.Contract;
@@ -54,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -101,6 +98,7 @@ public class SettlementService {
     @Transactional
     @ExecutionTime("SettlementBatchCalculation")
     @Audited(entityType = "SETTLEMENT_RUN", action = "CALCULATE")
+    @SuppressWarnings("null")
     public SettlementRunResponseDto calculateOrPreviewSettlement(SettlementCalculateRequestDto request,
                                                                  String idempotencyKey,
                                                                  String initiatedBy) {
@@ -148,7 +146,7 @@ public class SettlementService {
 
         // 2. Fetch cached policies and contract rates
         List<Contract> contracts = contractRepository.findByVendorId(request.getVendorId());
-        List<Long> contractIds = contracts.stream().map(Contract::getId).toList();
+        List<Long> contractIds = contracts.stream().map(c -> c.getId()).toList();
         List<ContractRate> contractRates = policyCacheService.getContractRates(contractIds);
 
         List<IncentivePolicy> incentivePolicies = policyCacheService.getIncentivePolicies(
@@ -163,7 +161,7 @@ public class SettlementService {
 
         // 3. Group trips by Driver [O(T)]
         Map<Driver, List<Trip>> tripsByDriver = trips.stream()
-                .collect(Collectors.groupingBy(Trip::getDriver, LinkedHashMap::new, Collectors.toList()));
+                .collect(Collectors.groupingBy(t -> t.getDriver(), LinkedHashMap::new, Collectors.toList()));
 
         // Run totals accumulator
         BigDecimal runTotalGross = BigDecimal.ZERO;
@@ -188,8 +186,8 @@ public class SettlementService {
             List<CalculatedLineItem> basePayLines = basePayCalculator.calculate(driverTrips, contractRates);
             driverLines.addAll(basePayLines);
             BigDecimal driverGross = basePayLines.stream()
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .map(item -> item.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
             // B. Incentives
             List<CalculatedLineItem> incentiveLines = incentiveCalculator.calculate(
@@ -197,8 +195,8 @@ public class SettlementService {
             );
             driverLines.addAll(incentiveLines);
             BigDecimal driverIncentives = incentiveLines.stream()
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .map(item -> item.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
             // C. Penalties
             List<TripViolation> driverViolations = tripViolationRepository.findDriverViolationsInPeriod(
@@ -208,8 +206,8 @@ public class SettlementService {
             driverLines.addAll(penaltyLines);
             // Penalties are signed negative, convert to absolute for payslip debit summary
             BigDecimal driverPenaltiesAbs = penaltyLines.stream()
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .map(item -> item.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
                     .abs();
 
             // D. Statutory TDS (Section 194C)

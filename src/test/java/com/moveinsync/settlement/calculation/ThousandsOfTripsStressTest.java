@@ -5,9 +5,7 @@ import com.moveinsync.settlement.entity.ContractRate;
 import com.moveinsync.settlement.entity.Driver;
 import com.moveinsync.settlement.entity.IncentivePolicy;
 import com.moveinsync.settlement.entity.PenaltyPolicy;
-import com.moveinsync.settlement.entity.DriverPayslip;
 import com.moveinsync.settlement.entity.SettlementLine;
-import com.moveinsync.settlement.entity.SettlementRun;
 import com.moveinsync.settlement.entity.TaxConfig;
 import com.moveinsync.settlement.entity.Trip;
 import com.moveinsync.settlement.entity.TripViolation;
@@ -39,6 +37,7 @@ class ThousandsOfTripsStressTest {
 
     @Test
     @DisplayName("Process 10,000 trips over 50 drivers: Zero-drift mathematical reconciliation")
+    @SuppressWarnings("null")
     void testTenThousandTripsReconciliationStressTest() {
         long startTime = System.currentTimeMillis();
 
@@ -209,18 +208,18 @@ class ThousandsOfTripsStressTest {
 
             BigDecimal driverGross = linesForDriver.stream()
                     .filter(l -> l.getLineType() == SettlementLine.LineType.BASE_PAY)
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .map(l -> l.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
             BigDecimal driverIncentives = linesForDriver.stream()
                     .filter(l -> l.getLineType() == SettlementLine.LineType.INCENTIVE)
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .map(l -> l.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
             BigDecimal driverPenalties = linesForDriver.stream()
                     .filter(l -> l.getLineType() == SettlementLine.LineType.PENALTY)
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add).abs(); // penalty is signed negative
+                    .map(l -> l.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b)).abs(); // penalty is signed negative
 
             // Tax calculation on (Gross + Incentives)
             BigDecimal driverTaxable = driverGross.add(driverIncentives);
@@ -243,8 +242,8 @@ class ThousandsOfTripsStressTest {
 
             // Sum of all constituent signed lines: Sum(Amount_i)
             BigDecimal sumOfSignedLines = linesForDriver.stream()
-                    .map(CalculatedLineItem::getAmount)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                    .map(l -> l.getAmount())
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
                     .setScale(2, RoundingMode.HALF_UP);
 
             // 1. INVARIANT ASSERTION: Exact Rupee-to-Paisa Reconciliation per Driver
@@ -263,7 +262,7 @@ class ThousandsOfTripsStressTest {
 
         // 2. INVARIANT ASSERTION: Run Totals Match Sum of Driver Payslips
         BigDecimal sumOfDriverPayslips = driverPayslipNetMap.values().stream()
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
         assertThat(expectedTotalNet)
                 .as("Total Settlement Run Net must exactly match the sum of individual driver payslips")

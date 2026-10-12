@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moveinsync.settlement.dto.BankingWebhookRequestDto;
 import com.moveinsync.settlement.entity.BusinessUnit;
 import com.moveinsync.settlement.entity.Driver;
-import com.moveinsync.settlement.entity.OutboxEvent;
 import com.moveinsync.settlement.entity.PayoutInstruction;
 import com.moveinsync.settlement.entity.SettlementRun;
 import com.moveinsync.settlement.entity.Vendor;

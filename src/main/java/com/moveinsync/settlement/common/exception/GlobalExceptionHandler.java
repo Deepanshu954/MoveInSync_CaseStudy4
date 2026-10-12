@@ -126,13 +126,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidStateTransitionException.class)
     public ResponseEntity<ExceptionResponseDto> handleInvalidState(InvalidStateTransitionException ex, HttpServletRequest req) {
         log.warn("Invalid state transition on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), req.getRequestURI());
     }
 
     @ExceptionHandler(PolicyViolationException.class)
     public ResponseEntity<ExceptionResponseDto> handlePolicyViolation(PolicyViolationException ex, HttpServletRequest req) {
         log.warn("Business policy violation on {}: {}", req.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req.getRequestURI());
+        return buildErrorResponse(HttpStatus.UNPROCESSABLE_CONTENT, ex.getMessage(), req.getRequestURI());
     }
 
     // =========================================================================

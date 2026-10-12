@@ -69,6 +69,7 @@ class SettlementOrchestrationIntegrationTest {
 
     @Test
     @DisplayName("Persistent run saves run, payslips, lines, and maintains exact mathematical identity")
+    @SuppressWarnings("null")
     void shouldCalculateAndPersistWithZeroDrift() {
         String key = "INTEG-KEY-" + UUID.randomUUID();
         SettlementCalculateRequestDto request = new SettlementCalculateRequestDto(
@@ -86,8 +87,8 @@ class SettlementOrchestrationIntegrationTest {
 
         // Mathematical identity validation: Sum of payslips == Total Net
         BigDecimal sumPayslipsNet = run.getDriverPayslips().stream()
-                .map(DriverPayslipResponseDto::getNetPay)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .map(p -> p.getNetPay())
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
         assertThat(run.getTotalNet()).isEqualByComparingTo(sumPayslipsNet);
 
@@ -95,7 +96,7 @@ class SettlementOrchestrationIntegrationTest {
         for (DriverPayslipResponseDto p : run.getDriverPayslips()) {
             BigDecimal sumLines = p.getLines().stream()
                     .map(l -> l.getAmount())
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
 
             assertThat(p.getNetPay()).isEqualByComparingTo(sumLines);
         }

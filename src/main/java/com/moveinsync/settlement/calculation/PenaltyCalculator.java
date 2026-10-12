@@ -36,6 +36,7 @@ public class PenaltyCalculator {
      * @param policies   active penalty deduction policies
      * @return list of debit (negative signed) {@link CalculatedLineItem} deduction records
      */
+    @SuppressWarnings("null")
     public List<CalculatedLineItem> calculate(List<TripViolation> violations, List<PenaltyPolicy> policies) {
         if (violations == null || violations.isEmpty() || policies == null || policies.isEmpty()) {
             return Collections.emptyList();
@@ -45,7 +46,7 @@ public class PenaltyCalculator {
         List<TripViolation> activeViolations = violations.stream()
                 .filter(v -> v.getStatus() == TripViolation.ViolationStatus.ACTIVE)
                 .filter(v -> v.getTrip() != null && v.getTrip().getDriver() != null)
-                .sorted(Comparator.comparing(TripViolation::getEventAt))
+                .sorted(Comparator.comparing(v -> v.getEventAt()))
                 .toList();
 
         // 2. Group by Driver and ViolationType
@@ -53,7 +54,7 @@ public class PenaltyCalculator {
                 .collect(Collectors.groupingBy(
                         v -> v.getTrip().getDriver(),
                         LinkedHashMap::new,
-                        Collectors.groupingBy(TripViolation::getViolationType, LinkedHashMap::new, Collectors.toList())
+                        Collectors.groupingBy(v -> v.getViolationType(), LinkedHashMap::new, Collectors.toList())
                 ));
 
         List<CalculatedLineItem> penaltyLines = new ArrayList<>();
@@ -131,11 +132,12 @@ public class PenaltyCalculator {
         return penaltyLines;
     }
 
+    @SuppressWarnings("null")
     private PenaltyPolicy findMatchingPolicy(Driver driver, PenaltyPolicy.ViolationType type, List<PenaltyPolicy> policies) {
         return policies.stream()
                 .filter(p -> p.getViolationType() == type)
                 .filter(p -> p.getVendor() == null || (driver.getVendor() != null && Objects.equals(p.getVendor().getId(), driver.getVendor().getId())))
-                .max(Comparator.comparing(PenaltyPolicy::getVersion))
+                .max(Comparator.comparing(p -> p.getVersion()))
                 .orElse(null);
     }
 

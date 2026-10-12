@@ -49,6 +49,7 @@ public class AuthService {
      * @return response DTO containing token, validity duration in milliseconds, and granted roles
      * @throws org.springframework.security.core.AuthenticationException if credentials are invalid or account is disabled
      */
+    @SuppressWarnings("null")
     public AuthResponseDto login(AuthRequestDto request) {
         log.info("Attempting authentication for username: {}", request.getUsername());
 
@@ -60,7 +61,7 @@ public class AuthService {
         String jwtToken = jwtService.generateToken(userDetails);
 
         Set<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(auth -> auth.getAuthority())
                 .collect(Collectors.toSet());
 
         log.info("Authentication successful for user: {} with roles: {}", userDetails.getUsername(), roles);

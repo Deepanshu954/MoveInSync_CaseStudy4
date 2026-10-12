@@ -25,10 +25,11 @@ public class FinancialInvariantValidator {
      * @param payslips list of driver payslips generated for this run
      * @throws PolicyViolationException if amounts do not match exactly
      */
+    @SuppressWarnings("null")
     public void validateZeroDrift(SettlementRun run, List<DriverPayslip> payslips) {
         BigDecimal sumOfPayslips = payslips.stream()
-                .map(DriverPayslip::getNetPay)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .map(p -> p.getNetPay())
+                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b))
                 .setScale(2, RoundingMode.HALF_UP);
 
         if (run.getTotalNet().compareTo(sumOfPayslips) != 0) {

@@ -44,11 +44,12 @@ public class JwtService {
      * @param userDetails CustomUserDetails containing username, roles, and user ID
      * @return Compact signed JWT string
      */
+    @SuppressWarnings("null")
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         
         Set<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(auth -> auth.getAuthority())
                 .collect(Collectors.toSet());
         claims.put("roles", roles);
 
@@ -66,13 +67,14 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractClaim(token, claims -> claims.getSubject());
     }
 
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+        return extractClaim(token, claims -> claims.getExpiration());
     }
 
+    @SuppressWarnings("null")
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);

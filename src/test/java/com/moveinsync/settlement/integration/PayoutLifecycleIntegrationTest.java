@@ -12,7 +12,6 @@ import com.moveinsync.settlement.entity.SettlementRun;
 import com.moveinsync.settlement.repository.DriverPayslipRepository;
 import com.moveinsync.settlement.repository.OutboxEventRepository;
 import com.moveinsync.settlement.repository.PayoutInstructionRepository;
-import com.moveinsync.settlement.repository.SettlementRunRepository;
 import com.moveinsync.settlement.service.SettlementService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,9 +35,6 @@ class PayoutLifecycleIntegrationTest {
 
     @Autowired
     private SettlementService settlementService;
-
-    @Autowired
-    private SettlementRunRepository settlementRunRepository;
 
     @Autowired
     private DriverPayslipRepository driverPayslipRepository;

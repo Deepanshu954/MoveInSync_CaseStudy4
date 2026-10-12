@@ -36,6 +36,7 @@ public class IncentiveCalculator {
      * @param periodEnd   billing cycle end date (inclusive)
      * @return list of credit {@link CalculatedLineItem} bonus entries
      */
+    @SuppressWarnings("null")
     public List<CalculatedLineItem> calculate(
             List<Trip> trips,
             List<IncentivePolicy> policies,
@@ -49,7 +50,7 @@ public class IncentiveCalculator {
         // Group trips by driver
         Map<Driver, List<Trip>> tripsByDriver = trips.stream()
                 .filter(t -> t.getDriver() != null)
-                .collect(Collectors.groupingBy(Trip::getDriver, LinkedHashMap::new, Collectors.toList()));
+                .collect(Collectors.groupingBy(t -> t.getDriver(), LinkedHashMap::new, Collectors.toList()));
 
         List<CalculatedLineItem> incentiveLines = new ArrayList<>();
 

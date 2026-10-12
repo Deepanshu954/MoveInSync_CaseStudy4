@@ -8,7 +8,6 @@ import com.moveinsync.settlement.entity.ReconciliationRecord;
 import com.moveinsync.settlement.entity.SettlementRun;
 import com.moveinsync.settlement.entity.Vendor;
 import com.moveinsync.settlement.entity.VendorInvoice;
-import com.moveinsync.settlement.repository.ReconciliationRecordRepository;
 import com.moveinsync.settlement.repository.SettlementRunRepository;
 import com.moveinsync.settlement.repository.VendorInvoiceRepository;
 import com.moveinsync.settlement.repository.VendorRepository;
@@ -37,9 +36,6 @@ class ReconciliationIntegrationTest {
 
     @Autowired
     private VendorInvoiceRepository vendorInvoiceRepository;
-
-    @Autowired
-    private ReconciliationRecordRepository reconciliationRecordRepository;
 
     @Autowired
     private SettlementRunRepository settlementRunRepository;
