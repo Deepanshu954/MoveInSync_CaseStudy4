@@ -23,10 +23,16 @@ on:
   pull_request:
     branches: [ main ]
 
+# Least-privilege permissions to satisfy CodeQL CWE-275
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     name: Build & Run Full Test Suite
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     # ── PostgreSQL 16 service container ──────────────────────
     # Started before the job steps. Integration tests using
