@@ -37,3 +37,4 @@ logs/
 tmp/
 scratch/
 .ai/
+scripts/test_*.sh
