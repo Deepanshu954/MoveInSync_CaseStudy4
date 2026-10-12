@@ -1,3 +1,12 @@
+# ============================================================
+#  MoveInSync Vendor & Driver Settlement Engine
+#  Application Configuration
+#
+#  All sensitive values (DB password, JWT secret) are read from
+#  environment variables with safe development defaults shown below.
+#  Never commit real secrets — override via env vars in production.
+# ============================================================
+
 server:
   port: 8080
 
@@ -5,63 +14,98 @@ spring:
   application:
     name: settlement-engine
 
+  # ── Database Connection ────────────────────────────────────
+  # Override SPRING_DATASOURCE_* env vars in Docker / CI / Prod.
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/settlement}
     username: ${SPRING_DATASOURCE_USERNAME:settlement}
     password: ${SPRING_DATASOURCE_PASSWORD:settlement_dev}
     driver-class-name: org.postgresql.Driver
     hikari:
+      # Sized for ~20 concurrent settlement calculation threads
       maximum-pool-size: 20
       minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
+      idle-timeout: 300000       # 5 minutes
+      connection-timeout: 20000  # 20 seconds
 
+  # ── JPA / Hibernate ───────────────────────────────────────
   jpa:
     hibernate:
+      # 'validate' ensures Flyway schema matches entity model at startup.
+      # Never use 'update' or 'create' in production.
       ddl-auto: validate
+    # Disable OSIV — forces explicit @Transactional boundaries
     open-in-view: false
     show-sql: false
     properties:
       hibernate:
         format_sql: true
 
+  # ── Flyway Schema Migrations ───────────────────────────────
+  # V1__core_schema.sql  — Creates all 22 production tables
+  # V2__seed_data.sql    — Populates demo vendors, drivers, trips
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
 
-# JWT Configuration (Externalized to env vars with safe dev defaults)
+  # ── Spring Cache (Policy Cache) ───────────────────────────
+  # PolicyCacheService caches contract rates and incentive/penalty
+  # policies for the duration of a settlement run, reducing
+  # redundant DB round trips to O(1) per calculation batch.
+  cache:
+    type: simple
+
+# ── JWT Configuration ──────────────────────────────────────
+# In production, override JWT_SECRET with a 256-bit+ secure random key:
+#   openssl rand -hex 32
+# The default key below is safe only for local development.
 jwt:
   secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
-  expiration-ms: ${JWT_EXPIRATION_MS:86400000} # 24 hours
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}   # 24 hours
 
+# ── OpenAPI / Swagger UI ───────────────────────────────────
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
+    tags-sorter: alpha
 
+# ── Logging ───────────────────────────────────────────────
+# The [%X{traceId:-NONE}] field is populated by TraceIdFilter
+# from the incoming X-Trace-Id header, enabling request correlation
+# across all log lines within a single HTTP request lifecycle.
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId:-NONE}] [%thread] %-5level %logger{36} - %msg%n"
   level:
     com.moveinsync.settlement: INFO
+    org.springframework.security: WARN
 
-
+# ── Spring Boot Actuator ───────────────────────────────────
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health, info, metrics, prometheus
   endpoint:
     health:
       show-details: always
 
+# ── Settlement Engine Background Tasks ────────────────────
 settlement:
+  # Stale Run Recovery: finds PROCESSING runs that have been stuck
+  # for more than cutoff-minutes and marks them FAILED so a fresh
+  # billing run can proceed.
   stale-run:
-    check-interval-ms: 900000
-    cutoff-minutes: 30
-    initial-delay-ms: 60000
+    check-interval-ms: 900000   # Check every 15 minutes
+    cutoff-minutes: 30          # Consider stale after 30 minutes
+    initial-delay-ms: 60000     # Wait 1 minute after startup before first check
+
+  # Transactional Outbox: polls the outbox_event table using
+  # PostgreSQL SKIP LOCKED to dispatch pending banking events
+  # in a multi-instance-safe, at-least-once manner.
   outbox:
-    poll-interval-ms: 5000
+    poll-interval-ms: 5000      # Poll every 5 seconds

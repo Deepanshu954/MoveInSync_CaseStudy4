@@ -1,4 +1,21 @@
-name: CI Build & Verify
+# ============================================================
+#  MoveInSync Vendor & Driver Settlement Engine
+#  GitHub Actions — CI Build, Test & Verify Pipeline
+#
+#  Triggered on:
+#    • Every push to main (post-merge verification)
+#    • Every pull request targeting main (pre-merge gate)
+#
+#  Pipeline stages:
+#    1. Spin up PostgreSQL 16 service container
+#    2. Compile with Java 21 (Temurin distribution)
+#    3. Run full unit + integration test suite
+#    4. Build executable JAR (tests already run above)
+#    5. Upload Surefire HTML test reports as artifacts
+#    6. Upload JAR artifact for optional deployment
+# ============================================================
+
+name: CI — Build, Test & Verify
 
 on:
   push:
@@ -7,10 +24,14 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
-    name: Build & Verify Test Suite
+  build-and-test:
+    name: Build & Run Full Test Suite
     runs-on: ubuntu-latest
 
+    # ── PostgreSQL 16 service container ──────────────────────
+    # Started before the job steps. Integration tests using
+    # Testcontainers will also spin their own containers,
+    # but this is used for unit tests that need DB access.
     services:
       postgres:
         image: postgres:16-alpine
@@ -21,35 +42,57 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U settlement -d settlement"
+          --health-cmd "pg_isready -U settlement -d settlement_test"
           --health-interval 5s
           --health-timeout 5s
-          --health-retries 5
+          --health-retries 10
 
     steps:
+      # ── 1. Checkout ──────────────────────────────────────────
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      # ── 2. JDK 21 Setup with Maven Dependency Cache ──────────
+      - name: Set Up JDK 21 (Temurin) with Maven Cache
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
 
-      - name: Compile and Run Unit & Integration Tests
+      # ── 3. Compile (fast fail before running tests) ──────────
+      - name: Compile
+        run: ./mvnw compile -B -q
+
+      # ── 4. Run Full Test Suite ───────────────────────────────
+      # Unit tests (pure Java, no infrastructure) run alongside
+      # integration tests (Testcontainers spins its own Postgres).
+      - name: Run Unit & Integration Tests
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/settlement_test
           SPRING_DATASOURCE_USERNAME: settlement
           SPRING_DATASOURCE_PASSWORD: settlement_dev
-        run: mvn clean test -B
+          TESTCONTAINERS_RYUK_DISABLED: "true"
+        run: ./mvnw test -B
 
-      - name: Build Executable JAR
-        run: mvn package -DskipTests -B
+      # ── 5. Build Executable JAR ──────────────────────────────
+      - name: Package Executable JAR
+        run: ./mvnw package -DskipTests -B -q
 
-      - name: Publish Surefire Test Reports
+      # ── 6. Upload Surefire Test Reports ──────────────────────
+      - name: Upload Test Reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
+          name: surefire-test-reports
           path: target/surefire-reports/
+          retention-days: 14
+
+      # ── 7. Upload JAR Artifact ───────────────────────────────
+      - name: Upload Settlement Engine JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: settlement-engine-jar
+          path: target/settlement-engine-*.jar
+          retention-days: 7

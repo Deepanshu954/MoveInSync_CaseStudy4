@@ -8,8 +8,10 @@ plan/
 *.pdf
 
 ### Secrets & Environment ###
+# Commit .env.example as a template — never commit .env itself
 .env
 .env.*
+!.env.example
 *.pem
 *.key
 *.p12
