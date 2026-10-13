@@ -5,6 +5,7 @@ target/
 
 ### Confidential & Planning Docs ###
 plan/
+prep/
 *.pdf
 
 ### Secrets & Environment ###
